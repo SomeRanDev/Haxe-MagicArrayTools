@@ -9,8 +9,8 @@ using LazyArrayTools;
 
 var arr = [1, 2, 3, 4];
 
-arr.filter((n) -> n % 2 == 0)
-   .map((n) -> "This is even number: " + n)
+arr.filter(n -> n % 2 == 0)
+   .map(n -> "This is even number: " + n)
    .forEach(trace);
 //    |
 //    |   at compile-time is
