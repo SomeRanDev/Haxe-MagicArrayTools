@@ -3,6 +3,6 @@
 
 -main Test
 
---macro MagicArrayTools.setup()
+--macro mat.generation.MagicBuildSetup.setup()
 
 -js Test.js
