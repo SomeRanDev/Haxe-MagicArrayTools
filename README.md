@@ -45,8 +45,8 @@ Any function that takes a callback as an argument can accept an expression (`Exp
                             // Int should be String
                             // ... For function argument 'i'
 
-[1, 2, 3].map("" + _);      // Works!
-[1, 2, 3].map((i:Int) -> "" + i); // (This would also work)
+[1, 2, 3].map("" + _);            // Fix using inline mode!
+[1, 2, 3].map((i:Int) -> "" + i); // (Explicit-typing also works)
 ```
 
 &nbsp;
