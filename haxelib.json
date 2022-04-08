@@ -1,0 +1,23 @@
+{
+	"name": "magic-array-tools",
+	"version": "1.0.0",
+	"description": "Automatically converts chained helper functions on Arrays/Iterables into single, optimal for-loops.",
+	"url": "https://github.com/RobertBorghese/Haxe-MagicArrayTools",
+	"license": "MIT",
+	"tags": [
+		"utility",
+		"macro",
+		"expr",
+		"array",
+		"iterable",
+		"fast",
+		"performance",
+		"iteration",
+		"haxe",
+		"extension",
+		"js"
+	],
+	"classPath": "src/",
+	"releasenote": "Library published!",
+	"contributors": ["RobertBorghese"]
+}

@@ -1,0 +1,8 @@
+-cp ../src/
+-cp .
+
+-main Test
+
+--macro MagicArrayTools.setup()
+
+-js Test.js
