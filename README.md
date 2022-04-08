@@ -25,34 +25,35 @@ for(it in arr) {
 ---
 
 # [Installation]
-Install via haxelib.
-```
-haxelib install magic-array-tools
-```
-
-Add the lib to your `.hxml` file or compile command.
-```hxml
--lib magic-array-tools
-```
-
-Add this top of the file or `import.hx`.
-```haxe
-using MagicArrayTools;
-```
+| # | What to do | What to write |
+| - | ------ | ------ |
+| 1 | Install via haxelib. | <pre>haxelib install magic-array-tools</pre> |
+| 2 | Add the lib to your `.hxml` file or compile command. | <pre lang="hxml">-lib magic-array-tools</pre> |
+| 3 | Add this top of your source file or `import.hx`. | <pre lang="haxe">using MagicArrayTools;</pre> |
 
 ---
 
-# [Features]
+# [Core Quirks/Features]
 
-### Lazy Mode
+### Inline Mode
 
-Feeling even lazier? Any function that takes a callback as an argument can accept an expression (`Expr`) that's just the callback body. Use a single underscore identifier (`_`) to represent the argument that would normally be passed to the callback (usually the processed array item).
+While local functions can be passed as an argument, for short/one-line operations it is recommended "inline mode" is used. This resolves any issues that comes from Haxe type inferences, and it helps apply the exact expression where desired.
+
+Any function that takes a callback as an argument can accept an expression (`Expr`) that's just the callback body. Use a single underscore identifier (`_`) to represent the argument that would normally be passed to the callback (usually the processed array item). This expression will be placed and typed directly in the resuling for-loop.
 ```haxe
-arr.filter(_ % 2 == 0)
-   .map("This is even number: " + _);
+[1, 2, 3].map(i -> "" + i); // Error:
+                            // Int should be String
+                            // ... For function argument 'i'
+
+[1, 2, 3].map("" + _);      // Works!
+[1, 2, 3].map((i:Int) -> "" + i); // (This would also work)
 ```
 
 &nbsp;
+
+---
+
+# [Array/Iterable Functions]
 
 ### `map` and `filter`
 
