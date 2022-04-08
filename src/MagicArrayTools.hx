@@ -38,3 +38,57 @@ macro function filter(ethis: Expr, callback: Expr) {
 	final e = fl.build();
 	return e;
 }
+
+macro function forEach(ethis: Expr, callback: Expr) {
+	final fl = parseStaticCalls(macro MagicArrayTools.forEach($ethis, $callback));
+	final e = fl.build();
+	return e;
+}
+
+macro function forEachThen(ethis: Expr, callback: Expr) {
+	final fl = parseStaticCalls(macro MagicArrayTools.forEachThen($ethis, $callback));
+	final e = fl.build();
+	return e;
+}
+
+macro function size(ethis: Expr) {
+	final fl = parseStaticCalls(macro MagicArrayTools.size($ethis));
+	final e = fl.build();
+	return e;
+}
+
+macro function count(ethis: Expr, callback: Expr) {
+	final fl = parseStaticCalls(macro MagicArrayTools.count($ethis, $callback));
+	final e = fl.build();
+	return e;
+}
+
+macro function isEmpty(ethis: Expr) {
+	final fl = parseStaticCalls(macro MagicArrayTools.isEmpty($ethis));
+	final e = fl.build();
+	return e;
+}
+
+macro function find(ethis: Expr, callback: Expr) {
+	final fl = parseStaticCalls(macro MagicArrayTools.find($ethis, $callback));
+	final e = fl.build();
+	return e;
+}
+
+macro function indexOf(ethis: Expr, obj: Expr) {
+	final fl = parseStaticCalls(macro MagicArrayTools.indexOf($ethis, $obj));
+	final e = fl.build();
+	return e;
+}
+
+macro function asList(ethis: Expr) {
+	final fl = parseStaticCalls(macro MagicArrayTools.asList($ethis));
+	final e = fl.build();
+	return e;
+}
+
+macro function asVector(ethis: Expr) {
+	final fl = parseStaticCalls(macro MagicArrayTools.asVector($ethis));
+	final e = fl.build();
+	return e;
+}

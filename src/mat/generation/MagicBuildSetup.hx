@@ -47,7 +47,9 @@ function convert(e: Null<Expr>): Null<Expr> {
 
 final ExtensionMethods = [
 	"stringifyAndTrace",
-	"map", "filter", "forEach", "forEachThen"
+	"map", "filter", "forEach", "forEachThen",
+	"size", "count", "isEmpty", "find", "indexOf",
+	"asList", "asVector"
 ];
 
 // Macro static extension functions cannot analyze the "this" Expr passed.

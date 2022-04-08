@@ -17,12 +17,18 @@ class ForLoop {
 
 	var initVarNames: Map<String,Int>;
 
+	var indexTracking: Bool;
+
+	var complete: Bool;
+
 	public function new() {
 		init = macro final result = [];
 		initVars = [];
 		loops = [];
 		result = macro result;
 		initVarNames = [];
+		indexTracking = false;
+		complete = false;
 	}
 
 	public function setCoreIterated(e: Expr) {
@@ -39,28 +45,65 @@ class ForLoop {
 		}
 	}
 
+	public function setAction(a: Expr) {
+		for(l in loops) {
+			l.setAction(a);
+		}
+		complete = true;
+	}
+
+	public function clearResult() {
+		init = macro @:mergeBlock {};
+		for(l in loops) l.clearResult();
+		result = macro @:mergeBlock {};
+	}
+
+	public function enableIndexTracking() {
+		indexTracking = true;
+	}
+
 	public function build() {
-		final exprs = loops.map(fl -> fl.build());
+		final indexTrackingInit = indexTracking ? (macro var i = 0) : (macro @:mergeBlock {});
+		final exprs = loops.map(fl -> fl.build(indexTracking));
 		return macro {
 			$init;
 			@:mergeBlock $b{initVars};
+			$indexTrackingInit;
 			@:mergeBlock $b{exprs};
 			$result;
 		}
 	}
 
 	public function callModifier(name: String, e: Array<Expr>) {
+		if(complete) {
+			throw 'Cannot call $name on completed for-loop.';
+		}
 		switch(name) {
 			case "map": if(e.length == 1) map(e[0]);
 			case "filter": if(e.length == 1) filter(e[0]);
+			case "forEach": if(e.length == 1) forEach(e[0]);
+			case "forEachThen": if(e.length == 1) forEachThen(e[0]);
+
+			case "size": if(e.length == 0) size();
+			case "count": if(e.length == 1) { count(e[0]); } else if(e.length == 0) { count(); };
+			case "isEmpty": if(e.length == 0) isEmpty();
+			case "find": if(e.length == 1) find(e[0]);
+			case "indexOf": if(e.length == 1) indexOf(e[0]);
+
+			case "asList": if(e.length == 0) asList();
+			case "asVector": if(e.length == 0) asVector();
 		}
 	}
 
-	public function map(e: Expr) {
-		final callbackData = new MagicCallback(e, genName("map"));
-		if(callbackData.usedName) usedName("map");
+	function makeMagicCallback(e: Expr, name: String) {
+		final callbackData = new MagicCallback(e, genName(name));
+		if(callbackData.usedName) usedName(name);
 		if(callbackData.init != null) initVars.push(callbackData.init);
+		return callbackData;
+	}
 
+	public function map(e: Expr) {
+		final callbackData = makeMagicCallback(e, "map");
 		final e2 = callbackData.expr;
 		final p = e.pos;
 		final pre = macro @:pos(p) final __ = $e2;
@@ -68,14 +111,91 @@ class ForLoop {
 	}
 
 	public function filter(e: Expr) {
-		final callbackData = new MagicCallback(e, genName("filter"));
-		if(callbackData.usedName) usedName("filter");
-		if(callbackData.init != null) initVars.push(callbackData.init);
-
+		final callbackData = makeMagicCallback(e, "filter");
 		final e2 = callbackData.expr;
 		final p = e.pos;
 		final pre = macro @:pos(p) if(!($e2)) continue;
 		addPreAction(pre);
+	}
+
+	public function forEach(e: Expr) {
+		final callbackData = makeMagicCallback(e, "forEach");
+		final e2 = callbackData.expr;
+		final p = e.pos;
+		final pre = macro @:pos(p) $e2;
+		addPreAction(pre);
+		clearResult();
+	}
+
+	public function forEachThen(e: Expr) {
+		final callbackData = makeMagicCallback(e, "forEachThen");
+		final e2 = callbackData.expr;
+		final p = e.pos;
+		final pre = macro @:pos(p) $e2;
+		addPreAction(pre);
+	}
+
+	public function size() {
+		init = macro var result = 0;
+		setAction(macro result++);
+	}
+
+	public function count(e: Null<Expr> = null) {
+		if(e == null) {
+			return size();
+		}
+
+		final callbackData = makeMagicCallback(e, "count");
+		init = macro var result = 0;
+		final e2 = callbackData.expr;
+		setAction(macro @:mergeBlock {
+			if($e2) {
+				result++;
+			}
+		});
+	}
+
+	public function isEmpty() {
+		init = macro var result = true;
+		setAction(macro @:mergeBlock {
+			result = false;
+			break;
+		});
+	}
+
+	public function find(e: Expr) {
+		final callbackData = makeMagicCallback(e, "find");
+
+		init = macro var result = null;
+
+		final e2 = callbackData.expr;
+		setAction(macro @:mergeBlock {
+			if($e2) {
+				result = _;
+				break;
+			}
+		});
+	}
+
+	public function indexOf(e: Expr) {
+		init = macro var result = -1;
+		enableIndexTracking();
+		setAction(macro @:mergeBlock {
+			if($e == _) {
+				result = i;
+				break;
+			}
+		});
+	}
+
+	public function asList() {
+		init = macro final result = new haxe.ds.List();
+		setAction(macro result.add(_));
+	}
+
+	public function asVector() {
+		result = macro haxe.ds.Vector.fromArrayCopy(result);
+		complete = true;
 	}
 
 	function genName(str: String) {

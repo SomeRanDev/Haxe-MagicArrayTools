@@ -34,14 +34,20 @@ class ForLoopInternals {
 	}
 
 	public function setAction(a: Expr) {
-		action = a;
+		action = a.replaceUnderscore(currentName);
 	}
 
-	public function build(): Expr {
+	public function clearResult() {
+		setAction(macro @:mergeBlock {});
+	}
+
+	public function build(indexTracking: Bool): Expr {
+		final indexTrackingIncrement = indexTracking ? (macro i++) : (macro @:mergeBlock {});
 		return macro @:mergeBlock {
 			for(it in $iterated) {
 				@:mergeBlock $b{preActions}
 				${ action.replaceUnderscore(currentName) };
+				$indexTrackingIncrement;
 			}
 		}
 	}
