@@ -30,6 +30,11 @@ Install via haxelib.
 haxelib install magic-array-tools
 ```
 
+Add the lib to your `.hxml` file or compile command.
+```haxe
+-lib magic-array-tools
+```
+
 Add this top of the file or `import.hx`.
 ```haxe
 using MagicArrayTools;
