@@ -1,9 +1,9 @@
-# Lazy Array Tools (Haxe)
+# Magic Array Tools (Haxe)
 Extension functions for `Array`s/`Iterable`s that are compile-time converted to a single, optimal for-loop.
 
 ```haxe
 // Place at top of file or in import.hx
-using LazyArrayTools;
+using MagicArrayTools;
 
 // ---
 
@@ -27,19 +27,19 @@ for(it in arr) {
 # [Installation]
 Install via haxelib.
 ```
-haxelib install lazy-array-tools
+haxelib install magic-array-tools
 ```
 
 Add this top of the file or `import.hx`.
 ```haxe
-using LazyArrayTools;
+using MagicArrayTools;
 ```
 
 ---
 
 # [Features]
 
-### Even Lazier Mode
+### Lazy Mode
 
 Feeling even lazier? Any function that takes a callback as an argument can accept an expression (`Expr`) that's just the callback body. Use a single underscore identifier (`_`) to represent the argument that would normally be passed to the callback (usually the processed array item).
 ```haxe
