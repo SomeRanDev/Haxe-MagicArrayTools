@@ -41,15 +41,15 @@ for(it in arr) {
 
 | Feature | Description |
 | --- | --- |
-| [Inline Mode](https://github.com/RobertBorghese/Haxe-MagicArrayTools/blob/main/README.md#inline-mode) | A shorter, faster syntax for callbacks |
-| [Disable Auto For-Loop](https://github.com/RobertBorghese/Haxe-MagicArrayTools/blob/main/README.md#disable-auto-for-loop) | Temporarily or permanently disable the automatic for-loop creation |
-| [`map` and `filter`](https://github.com/RobertBorghese/Haxe-MagicArrayTools/blob/main/README.md#map-and-filter) | Remapping and filtering functions |
-| [`forEach` and `forEachThen`](https://github.com/RobertBorghese/Haxe-MagicArrayTools/blob/main/README.md#foreach-and-foreachthen) | Iterate and run an expression or callback |
-| [`size` and `isEmpty`](https://github.com/RobertBorghese/Haxe-MagicArrayTools/blob/main/README.md#size-and-isempty) | Finds the number of elements |
-| [`count`](https://github.com/RobertBorghese/Haxe-MagicArrayTools/blob/main/README.md#count) | Counts the number of elements that match the condition |
-| [`find`](https://github.com/RobertBorghese/Haxe-MagicArrayTools/blob/main/README.md#find) | Finds the first element that matches the condition |
-| [`indexOf`](https://github.com/RobertBorghese/Haxe-MagicArrayTools/blob/main/README.md#indexOf) | Returns the index of the provided element |
-| [`asList` and `asVector`](https://github.com/RobertBorghese/Haxe-MagicArrayTools/blob/main/README.md#aslist-and-asvector) | Provides the result as a `haxe.ds.List` or `haxe.ds.Vector` |
+| [Inline Mode](https://github.com/RobertBorghese/Haxe-MagicArrayTools#inline-mode) | A shorter, faster syntax for callbacks |
+| [Disable Auto For-Loop](https://github.com/RobertBorghese/Haxe-MagicArrayTools#disable-auto-for-loop) | Temporarily or permanently disable the automatic for-loop creation |
+| [`map` and `filter`](https://github.com/RobertBorghese/Haxe-MagicArrayTools#map-and-filter) | Remapping and filtering functions |
+| [`forEach` and `forEachThen`](https://github.com/RobertBorghese/Haxe-MagicArrayTools#foreach-and-foreachthen) | Iterate and run an expression or callback |
+| [`size` and `isEmpty`](https://github.com/RobertBorghese/Haxe-MagicArrayTools#size-and-isempty) | Finds the number of elements |
+| [`count`](https://github.com/RobertBorghese/Haxe-MagicArrayTools#count) | Counts the number of elements that match the condition |
+| [`find`](https://github.com/RobertBorghese/Haxe-MagicArrayTools#find) | Finds the first element that matches the condition |
+| [`indexOf`](https://github.com/RobertBorghese/Haxe-MagicArrayTools#indexOf) | Returns the index of the provided element |
+| [`asList` and `asVector`](https://github.com/RobertBorghese/Haxe-MagicArrayTools#aslist-and-asvector) | Provides the result as a `haxe.ds.List` or `haxe.ds.Vector` |
 ---
 
 # [Features]
