@@ -11,23 +11,58 @@ import haxe.macro.Compiler;
 
 using haxe.macro.ExprTools;
 
+final ExtensionMethods = [
+	"stringifyAndTrace",
+	"map", "filter", "forEach", "forEachThen",
+	"size", "count", "isEmpty", "find", "indexOf",
+	"asList", "asVector"
+];
+
+var EnabledMAT = true;
+var SetupCalled = false;
+
 function setup() {
+	if(SetupCalled) return;
 	Compiler.addGlobalMetadata("", "@:build(mat.generation.MagicBuildSetup.setupMagicArrayTools())", true);
+	SetupCalled = true;
 }
 
-final RequiredUsingName = "MagicArrayTools_Fields_";
-
-function setupMagicArrayTools() {
-	var isUsing = false;
-	for(u in Context.getLocalUsing()) {
-		if(u.get().name == RequiredUsingName) {
-			isUsing = true;
-			break;
+function importIsMAT(im: ImportExpr) {
+	if(im.mode == INormal) {
+		for(p in im.path) {
+			if(p.name == "MagicArrayTools") {
+				return true;
+			}
 		}
 	}
-	if(!isUsing) return null;
+	return false;
+}
+
+function isUsingMAT() {
+	for(u in Context.getLocalUsing()) {
+		if(u.get().name == "MagicArrayTools_Fields_") {
+			return true;
+		}
+	}
+	for(im in Context.getLocalImports()) {
+		if(importIsMAT(im)) {
+			return true;
+		}
+	}
+	return false;
+}
+
+function setupMagicArrayTools() {
+	if(!isUsingMAT()) {
+		return null;
+	}
+
+	if(Context.defined("disableAutoForLoop")) {
+		EnabledMAT = false;
+	}
 
 	final fields = Context.getBuildFields();
+
 	for(f in fields) {
 		final e = switch(f.kind) {
 			case FVar(_, e): e;
@@ -45,13 +80,6 @@ function convert(e: Null<Expr>): Null<Expr> {
 	return e.map(convertInternal);
 }
 
-final ExtensionMethods = [
-	"stringifyAndTrace",
-	"map", "filter", "forEach", "forEachThen",
-	"size", "count", "isEmpty", "find", "indexOf",
-	"asList", "asVector"
-];
-
 // Macro static extension functions cannot analyze the "this" Expr passed.
 // https://haxe.org/manual/macro-limitations-static-extension.html
 //
@@ -60,11 +88,27 @@ final ExtensionMethods = [
 // direct calls to the MagicArrayTool module.
 function convertInternal(e: Expr): Expr {
 	switch(e.expr) {
+		case EMeta(m, _): {
+			if(EnabledMAT && m.name == "disableAutoForLoop") {
+				EnabledMAT = false;
+				final result = e.map(convertInternal);
+				EnabledMAT = true;
+				return result;
+			}
+		}
 		case ECall(eCall, params): {
 			switch(eCall.expr) {
 				case EField(eField, f): {
-					final newEField = convertInternal(eField);
-					if(ExtensionMethods.contains(f)) {
+					final buildForLoop = f == "buildForLoop";
+					final newEField = if(!EnabledMAT && buildForLoop) {
+						EnabledMAT = true;
+						final result = convertInternal(eField);
+						EnabledMAT = false;
+						result;
+					} else {
+						convertInternal(eField);
+					}
+					if(buildForLoop || (EnabledMAT && ExtensionMethods.contains(f))) {
 						return convertToDirectCall(
 							f,
 							[newEField].concat(params),

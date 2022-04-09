@@ -2,7 +2,6 @@ package;
 
 #if macro
 import mat.generation.ForLoop;
-import mat.generation.ExprHelpers.removeMergeBlocks;
 import mat.generation.MagicParser.parseStaticCalls;
 
 import haxe.macro.Expr;
@@ -12,83 +11,67 @@ import haxe.macro.Compiler;
 using haxe.macro.ExprTools;
 #end
 
-macro function stringifyAndTrace(ethis: Expr): Expr {
+#if !disableAutoForLoop
+
+#if macro
+
+function parse(name: String, ethis: Expr, args: Array<Expr>) {
+	return args.length == 0 ?
+		parseStaticCalls(macro MagicArrayTools.$name($ethis)) :
+		(args.length == 1 ?
+			parseStaticCalls(macro MagicArrayTools.$name($ethis, $e{args[0]})) :
+			parseStaticCalls(macro MagicArrayTools.$name($ethis, $a{args}))
+		);
+}
+
+function parseAndBuild(name: String, ethis: Expr, args: Array<Expr>) {
+	final fl = parse(name, ethis, args);
+	final e = fl.build();
+	return e;
+}
+
+#end
+
+@:noUsing macro function stringifyAndTrace(ethis: Expr, args: Array<Expr>)
+	return parseAndBuild("stringifyAndTrace", ethis, args);
+
+@:noUsing macro function map(ethis: Expr, args: Array<Expr>)
+	return parseAndBuild("map", ethis, args);
+
+@:noUsing macro function filter(ethis: Expr, args: Array<Expr>)
+	return parseAndBuild("filter", ethis, args);
+
+@:noUsing macro function forEach(ethis: Expr, args: Array<Expr>)
+	return parseAndBuild("forEach", ethis, args);
+
+@:noUsing macro function forEachThen(ethis: Expr, args: Array<Expr>)
+	return parseAndBuild("forEachThen", ethis, args);
+
+@:noUsing macro function size(ethis: Expr, args: Array<Expr>)
+	return parseAndBuild("size", ethis, args);
+
+@:noUsing macro function count(ethis: Expr, args: Array<Expr>)
+	return parseAndBuild("count", ethis, args);
+
+@:noUsing macro function isEmpty(ethis: Expr, args: Array<Expr>)
+	return parseAndBuild("isEmpty", ethis, args);
+
+@:noUsing macro function find(ethis: Expr, args: Array<Expr>)
+	return parseAndBuild("find", ethis, args);
+
+@:noUsing macro function indexOf(ethis: Expr, args: Array<Expr>)
+	return parseAndBuild("indexOf", ethis, args);
+
+@:noUsing macro function asList(ethis: Expr, args: Array<Expr>)
+	return parseAndBuild("asList", ethis, args);
+
+@:noUsing macro function asVector(ethis: Expr, args: Array<Expr>)
+	return parseAndBuild("asVector", ethis, args);
+
+#end
+
+macro function buildForLoop(ethis: Expr) {
 	final fl = parseStaticCalls(ethis);
-	final e = fl.build();
-
-	final newExpr = removeMergeBlocks(e);
-	if(newExpr == null) return macro $ethis;
-
-	final str = newExpr.toString();
-	final p = Context.currentPos();
-	return macro {
-		@:pos(p) trace($v{str});
-		$e;
-	}
-}
-
-macro function map(ethis: Expr, callback: Expr) {
-	final fl = parseStaticCalls(macro MagicArrayTools.map($ethis, $callback));
-	final e = fl.build();
-	return e;
-}
-
-macro function filter(ethis: Expr, callback: Expr) {
-	final fl = parseStaticCalls(macro MagicArrayTools.filter($ethis, $callback));
-	final e = fl.build();
-	return e;
-}
-
-macro function forEach(ethis: Expr, callback: Expr) {
-	final fl = parseStaticCalls(macro MagicArrayTools.forEach($ethis, $callback));
-	final e = fl.build();
-	return e;
-}
-
-macro function forEachThen(ethis: Expr, callback: Expr) {
-	final fl = parseStaticCalls(macro MagicArrayTools.forEachThen($ethis, $callback));
-	final e = fl.build();
-	return e;
-}
-
-macro function size(ethis: Expr) {
-	final fl = parseStaticCalls(macro MagicArrayTools.size($ethis));
-	final e = fl.build();
-	return e;
-}
-
-macro function count(ethis: Expr, callback: Expr) {
-	final fl = parseStaticCalls(macro MagicArrayTools.count($ethis, $callback));
-	final e = fl.build();
-	return e;
-}
-
-macro function isEmpty(ethis: Expr) {
-	final fl = parseStaticCalls(macro MagicArrayTools.isEmpty($ethis));
-	final e = fl.build();
-	return e;
-}
-
-macro function find(ethis: Expr, callback: Expr) {
-	final fl = parseStaticCalls(macro MagicArrayTools.find($ethis, $callback));
-	final e = fl.build();
-	return e;
-}
-
-macro function indexOf(ethis: Expr, obj: Expr) {
-	final fl = parseStaticCalls(macro MagicArrayTools.indexOf($ethis, $obj));
-	final e = fl.build();
-	return e;
-}
-
-macro function asList(ethis: Expr) {
-	final fl = parseStaticCalls(macro MagicArrayTools.asList($ethis));
-	final e = fl.build();
-	return e;
-}
-
-macro function asVector(ethis: Expr) {
-	final fl = parseStaticCalls(macro MagicArrayTools.asVector($ethis));
 	final e = fl.build();
 	return e;
 }

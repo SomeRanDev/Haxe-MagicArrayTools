@@ -4,6 +4,8 @@ package mat.generation;
 
 import haxe.macro.Expr;
 
+using mat.generation.ExprHelpers;
+
 function parseStaticCalls(e: Expr) {
 	final fl = new ForLoop();
 	parseStaticCall(e, fl);
@@ -20,7 +22,7 @@ function parseStaticCall(e: Expr, fl: ForLoop) {
 				if(!callData) {
 					fl.setCoreIterated(target);
 				}
-				fl.callModifier(name, params.slice(1));
+				fl.callModifier(name, params.slice(1), e.pos);
 				return true;
 			}
 		}

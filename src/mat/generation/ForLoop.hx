@@ -3,6 +3,9 @@ package mat.generation;
 #if macro
 
 using mat.generation.ExprHelpers;
+import mat.generation.ExprHelpers.removeMergeBlocks;
+
+import mat.generation.TypeHelpers.isTypeIterable;
 
 import haxe.macro.Expr;
 import haxe.macro.Context;
@@ -17,21 +20,43 @@ class ForLoop {
 
 	var initVarNames: Map<String,Int>;
 
-	var indexTracking: Bool;
-
+	var isIterable: Bool;
 	var complete: Bool;
+	var indexTracking: Bool;
+	var stringifyAndTrace: Bool;
 
 	public function new() {
 		init = macro final result = [];
 		initVars = [];
 		loops = [];
 		result = macro result;
+
 		initVarNames = [];
-		indexTracking = false;
+		
+		isIterable = false;
 		complete = false;
+		indexTracking = false;
+		stringifyAndTrace = false;
 	}
 
 	public function setCoreIterated(e: Expr) {
+		isIterable = checkType(e);
+		if(isIterable) {
+			initLoops(e);
+		} else {
+			result = e;
+		}
+	}
+
+	function checkType(e: Expr) {
+		return try {
+			isTypeIterable(Context.typeExpr(e).t);
+		} catch(e) {
+			false;
+		};
+	}
+
+	function initLoops(e: Expr) {
 		if(loops.length == 0) {
 			loops.push(new ForLoopInternals(e));
 		} else {
@@ -62,7 +87,11 @@ class ForLoop {
 		indexTracking = true;
 	}
 
-	public function build() {
+	function buildInternal(): Expr {
+		if(!isIterable) {
+			return result;
+		}
+
 		final indexTrackingInit = indexTracking ? (macro var i = 0) : (macro @:mergeBlock {});
 		final exprs = loops.map(fl -> fl.build(indexTracking));
 		return macro {
@@ -74,24 +103,84 @@ class ForLoop {
 		}
 	}
 
-	public function callModifier(name: String, e: Array<Expr>) {
-		if(complete) {
-			throw 'Cannot call $name on completed for-loop.';
+	public function build(): Expr {
+		final e = buildInternal();
+	
+		if(stringifyAndTrace) {
+			final newExpr = removeMergeBlocks(e);
+			if(newExpr == null) return e;
+			final str = newExpr.toString();
+			final p = Context.currentPos();
+			return macro {
+				@:pos(p) trace($v{str});
+				$e;
+			}
 		}
-		switch(name) {
-			case "map": if(e.length == 1) map(e[0]);
-			case "filter": if(e.length == 1) filter(e[0]);
-			case "forEach": if(e.length == 1) forEach(e[0]);
-			case "forEachThen": if(e.length == 1) forEachThen(e[0]);
+		
+		return e;
+	}
 
-			case "size": if(e.length == 0) size();
-			case "count": if(e.length == 1) { count(e[0]); } else if(e.length == 0) { count(); };
-			case "isEmpty": if(e.length == 0) isEmpty();
-			case "find": if(e.length == 1) find(e[0]);
-			case "indexOf": if(e.length == 1) indexOf(e[0]);
+	public function callModifier(name: String, e: Array<Expr>, callPosition: Position) {
+		if(!isIterable) {
+			result = { pos: callPosition, expr: ECall({ pos: result.pos, expr: EField(result, name) }, e) };
+			return;
+		}
+		if(name == "stringifyAndTrace") {
+			stringifyAndTrace = true;
+			return;
+		}
+		if(complete) {
+			Context.warning('Cannot call $name on completed for-loop.', callPosition);
+		}
 
-			case "asList": if(e.length == 0) asList();
-			case "asVector": if(e.length == 0) asVector();
+		final oneParam = switch(name) {
+			case "map": map;
+			case "filter": filter;
+			case "forEach": forEach;
+			case "forEachThen": forEachThen;
+
+			case "count": count;
+			case "find": find;
+			case "indexOf": indexOf;
+
+			case _: null;
+		}
+		if(oneParam != null) {
+			makeCall(oneParam, 1, e, name, callPosition);
+			return;
+		}
+
+		final zeroParam: Dynamic = switch(name) {
+			case "count": count;
+			case "size": size;
+			case "isEmpty": isEmpty;
+
+			case "asList": asList;
+			case "asVector": asVector;
+
+			case _: null;
+		}
+		if(zeroParam != null) {
+			makeCall(zeroParam, 0, e, name, callPosition);
+			return;
+		}
+	}
+
+	function makeCall(f: Dynamic, paramCount: Int, params: Array<Expr>, name: String, callPosition: Position) {
+		if(paramCount == 1) {
+			if(params.length == 0) {
+				Context.error('One argument required for call to $name', callPosition);
+				return;
+			}
+			for(p in params) {
+				f(p);
+			}
+		} else if(paramCount == 0) {
+			if(params.length > 0) {
+				Context.error('${params.length} unwanted arguments passed for call to $name', callPosition);
+				return;
+			}
+			f();
 		}
 	}
 
