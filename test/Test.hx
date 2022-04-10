@@ -151,11 +151,17 @@ function main() {
 	//**********************************************
 	// * @disableAutoForLoop
 	//**********************************************
+	{
+		final t1 = new TestConflict1();
+		assert(t1.map() == 4321);
+		@disableAutoForLoop assert(t1.map() == 4321);
+	}
+
 	@disableAutoForLoop {
-		final a = new TestConflict();
-		assert(a.map() == 1234);
-		assertEquals(a.map(_).buildForLoop(), [0, 1, 2, 3, 4]);
-		assert(a.map(_).size().buildForLoop() == 5);
+		final t2 = new TestConflict2();
+		assert(t2.map() == 1234);
+		assertEquals(t2.map(_).buildForLoop(), [0, 1, 2, 3, 4]);
+		assert(t2.map(_).size().buildForLoop() == 5);
 
 		final arr = [1, 2, 3, 4, 5];
 		assertEquals(arr.map(i -> i), arr);
@@ -168,7 +174,12 @@ function main() {
 	trace("[Magic Array Tools] Test Successful!");
 }
 
-class TestConflict {
+class TestConflict1 {
+	public function new() {}
+	public function map() return 4321;
+}
+
+class TestConflict2 {
 	public function new() {}
 	public function map() return 1234;
 	public function iterator(): Iterator<Int> { return 0...5; }
