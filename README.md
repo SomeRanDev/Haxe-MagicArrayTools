@@ -99,10 +99,10 @@ class ConflictTester {
 final obj = new ConflictTester();
 
 // This generates a for-loop.
-// Unable to call "map" function on Iterable...
 obj.map(i -> i);
 
-// ... unless auto for-loops are disabled.
+// Unable to call "map" function on this
+// Iterable unless auto for-loops are disabled.
 @disableAutoForLoop {
     obj.map(i -> i);                // 1234
     obj.map(i -> i).buildForLoop(); // [0, 1, 2, 3, 4]
