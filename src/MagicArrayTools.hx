@@ -32,8 +32,8 @@ function parseAndBuild(name: String, ethis: Expr, args: Array<Expr>) {
 
 #end
 
-@:noUsing macro function stringifyAndTrace(ethis: Expr, args: Array<Expr>)
-	return parseAndBuild("stringifyAndTrace", ethis, args);
+@:noUsing macro function displayForLoop(ethis: Expr, args: Array<Expr>)
+	return parseAndBuild("displayForLoop", ethis, args);
 
 @:noUsing macro function map(ethis: Expr, args: Array<Expr>)
 	return parseAndBuild("map", ethis, args);

@@ -19,6 +19,26 @@ function isMeta(e: Expr, metaName: String): Expr {
 	return null;
 }
 
+function isReturn(e: Expr): Null<Expr> {
+	return switch(e.expr) {
+		case EReturn(ex): ex;
+		case EBlock(exprs): {
+			if(exprs.length == 1) {
+				isReturn(exprs[0]);
+			} else {
+				null;
+			}
+		}
+		case EMeta(m, ex): {
+			return {
+				pos: e.pos,
+				expr: EMeta(m, isReturn(ex))
+			};
+		}
+		case _: null;
+	}
+}
+
 function replaceUnderscore(e: Expr, name: String, doubleUnderscore: Null<String> = null): Expr {
 	switch(e.expr) {
 		case EConst(c): {
@@ -52,6 +72,35 @@ function replaceUnderscore(e: Expr, name: String, doubleUnderscore: Null<String>
 		case _:
 	}
 	return e.map(_e -> replaceUnderscore(_e, name, doubleUnderscore));
+}
+
+function replaceIdentWithUnderscore(e: Expr, name: String): Expr {
+	switch(e.expr) {
+		case EConst(c): {
+			switch(c) {
+				case CIdent(str): {
+					if(str == name) {
+						return { expr: EConst(CIdent("_")), pos: e.pos };
+					}
+				}
+				case _:
+			}
+		}
+		case _:
+	}
+	return e.map(_e -> replaceIdentWithUnderscore(_e, name));
+}
+
+function stripImplicitReturnMetadata(e: Expr) {
+	switch(e.expr) {
+		case EMeta(m, e): {
+			if(m.name == ":implicitReturn") {
+				return e.map(stripImplicitReturnMetadata);
+			}
+		}
+		case _:
+	}
+	return e.map(stripImplicitReturnMetadata);
 }
 
 function removeMergeBlocks(e: Expr): Expr {

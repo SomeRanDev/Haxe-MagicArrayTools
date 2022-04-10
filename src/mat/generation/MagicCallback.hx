@@ -2,6 +2,8 @@ package mat.generation;
 
 #if macro
 
+using mat.generation.ExprHelpers;
+
 import haxe.macro.Expr;
 
 class MagicCallback {
@@ -14,14 +16,34 @@ class MagicCallback {
 		init = null;
 		usedName = false;
 
-		final p = e.pos;
+		var newExpr = e;
+
 		switch(e.expr) {
+			case EFunction(k, f): {
+				if(k == FArrow && f.expr != null && f.args.length == 1) {
+					final funcExpr = f.expr.isReturn();
+					if(funcExpr != null) {
+						final arg = f.args[0];
+						newExpr = {
+							pos: e.pos,
+							expr: EParenthesis(funcExpr
+								.replaceIdentWithUnderscore(arg.name)
+								.stripImplicitReturnMetadata())
+						};
+					}
+				}
+			}
+			case _:
+		}
+
+		final p = newExpr.pos;
+		switch(newExpr.expr) {
 			case EFunction(k, f): {
 				init = {
 					pos: p,
 					expr: EVars([{
 						name: name,
-						expr: e
+						expr: newExpr
 					}])
 				};
 				expr = macro @:pos(p) $i{name}(_);
@@ -31,14 +53,14 @@ class MagicCallback {
 				if(str == "_") {
 					expr = macro @:pos(p) _;
 				} else {
-					expr = macro @:pos(p) $e(_);
+					expr = macro @:pos(p) $newExpr(_);
 				}
 			}
 			case EField(_, _): {
-				expr = macro @:pos(p) $e(_);
+				expr = macro @:pos(p) $newExpr(_);
 			}
 			case _: {
-				expr = e;
+				expr = newExpr;
 			}
 		}
 	}

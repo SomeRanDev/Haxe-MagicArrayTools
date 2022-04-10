@@ -12,7 +12,7 @@ import haxe.macro.Compiler;
 using haxe.macro.ExprTools;
 
 final ExtensionMethods = [
-	"stringifyAndTrace",
+	"displayForLoop",
 	"map", "filter", "forEach", "forEachThen",
 	"size", "count", "isEmpty", "find", "indexOf",
 	"asList", "asVector"

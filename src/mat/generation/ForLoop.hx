@@ -23,7 +23,7 @@ class ForLoop {
 	var isIterable: Bool;
 	var complete: Bool;
 	var indexTracking: Bool;
-	var stringifyAndTrace: Bool;
+	var displayForLoop: Bool;
 
 	public function new() {
 		init = macro final result = [];
@@ -36,7 +36,7 @@ class ForLoop {
 		isIterable = false;
 		complete = false;
 		indexTracking = false;
-		stringifyAndTrace = false;
+		displayForLoop = false;
 	}
 
 	public function setCoreIterated(e: Expr) {
@@ -106,7 +106,7 @@ class ForLoop {
 	public function build(): Expr {
 		final e = buildInternal();
 	
-		if(stringifyAndTrace) {
+		if(displayForLoop) {
 			final newExpr = removeMergeBlocks(e);
 			if(newExpr == null) return e;
 			final str = newExpr.toString();
@@ -125,8 +125,8 @@ class ForLoop {
 			result = { pos: callPosition, expr: ECall({ pos: result.pos, expr: EField(result, name) }, e) };
 			return;
 		}
-		if(name == "stringifyAndTrace") {
-			stringifyAndTrace = true;
+		if(name == "displayForLoop") {
+			displayForLoop = true;
 			return;
 		}
 		if(complete) {
