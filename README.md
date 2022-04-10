@@ -1,5 +1,5 @@
 # Magic Array Tools (Haxe)
-Extension functions for `Array`s/`Iterable`s that are compile-time converted to a single, optimal for-loop.
+Extension functions for `Array`s/`Iterable`s that are compile-time converted to a single, optimal for-loop. Never again be concerned about performance when you need to throw on a couple `map`s and `filter`s. Any number of array modifications is guarenteed to run through just one loop at runtime!
 
 ```haxe
 // Place at top of file or in import.hx
