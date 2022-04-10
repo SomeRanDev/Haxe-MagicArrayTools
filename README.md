@@ -44,6 +44,8 @@ arr.filter(s -> s.length == 1)
 | 2 | Add the lib to your `.hxml` file or compile command. | <pre lang="hxml">-lib magic-array-tools</pre> |
 | 3 | Add this top of your source file or `import.hx`. | <pre lang="haxe">using MagicArrayTools;</pre> |
 
+Now use this library's functions on an `Array`, `Iterable`, or `Iterator` and let the magic happen!
+
 ---
 
 # [Feature Index]
