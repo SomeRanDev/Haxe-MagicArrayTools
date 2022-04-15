@@ -6,32 +6,45 @@ import haxe.macro.Expr;
 
 using mat.generation.ExprHelpers;
 
-function parseStaticCalls(e: Expr) {
+function parseStaticCalls(e: Expr, expectForLoop: Bool = false) {
 	final fl = new ForLoop();
-	parseStaticCall(e, fl);
+	if(!parseStaticCall(e, fl, expectForLoop) && expectForLoop) {
+		fl.setCoreIterated(e);
+	}
 	return fl;
 }
 
-function parseStaticCall(e: Expr, fl: ForLoop) {
+function parseStaticCall(e: Expr, fl: ForLoop, expectForLoop: Bool) {
 	 switch(e.expr) {
 		case ECall(eCall, params): {
+			if(expectForLoop) {
+				if(shouldExpectForLoop(eCall, fl, expectForLoop)) {
+					return true;
+				}
+			}
+			
 			final name = isMagicArrayToolsFunction(eCall);
 			if(name != null) {
-				final target = params[0];
-				final callData = parseStaticCall(target, fl);
-				if(!callData) {
-					fl.setCoreIterated(target);
-				}
-				fl.callModifier(name, params.slice(1), e.pos);
-				return true;
+				return parseCall(e, name, params, fl, expectForLoop);
 			}
 		}
 		case EParenthesis(_e): {
-			return parseStaticCall(_e, fl);
+			return parseStaticCall(_e, fl, expectForLoop);
 		}
-		case _:
+		case _: {
+		}
 	}
 	return false;
+}
+
+function parseCall(e: Expr, name: String, params: Array<Expr>, fl: ForLoop, expectForLoop: Bool) {
+	final target = params[0];
+	final callData = parseStaticCall(target, fl, expectForLoop);
+	if(!callData) {
+		fl.setCoreIterated(target);
+	}
+	fl.callModifier(name, params.slice(1), e.pos);
+	return true;
 }
 
 function isMagicArrayToolsFunction(e: Expr): Null<String> {
@@ -57,4 +70,17 @@ function isMagicArrayTools(e: Expr) {
 		case _: false;
 	}
 }
+
+function shouldExpectForLoop(eCall: Expr, fl: ForLoop, expectForLoop: Bool) {
+	switch(eCall.expr) {
+		case EField(newExpr, f): {
+			if(f == "buildForLoop") {
+				return parseStaticCall(newExpr, fl, expectForLoop);
+			}
+		}
+		case _:
+	}
+	return false;
+}
+
 #end

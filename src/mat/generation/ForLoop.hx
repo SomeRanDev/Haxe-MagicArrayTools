@@ -5,6 +5,10 @@ package mat.generation;
 using mat.generation.ExprHelpers;
 import mat.generation.ExprHelpers.removeMergeBlocks;
 
+import mat.generation.MagicBuildSetup;
+
+import mat.generation.MagicParser.parseStaticCalls;
+
 import mat.generation.TypeHelpers.isTypeIterable;
 
 import haxe.macro.Expr;
@@ -75,6 +79,15 @@ class ForLoop {
 			l.setAction(a);
 		}
 		complete = true;
+	}
+
+	function mergeSubForLoop(fl: ForLoop) {
+		if(fl.complete) {
+			throw "Cannot merge ForLoop that does not return array.";
+		}
+		for(l in fl.loops) {
+			loops.push(l);
+		}
 	}
 
 	public function clearResult() {
@@ -290,7 +303,8 @@ class ForLoop {
 	}
 
 	public function concat(e: Expr) {
-		loops.push(new ForLoopInternals(e));
+		final fl: ForLoop = parseStaticCalls(MagicBuildSetup.convertInternal(e), true);
+		mergeSubForLoop(fl);
 	}
 
 	function genName(str: String) {
