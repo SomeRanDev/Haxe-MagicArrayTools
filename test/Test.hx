@@ -130,6 +130,16 @@ function main() {
 	}
 
 	//**********************************************
+	// * asArray
+	//**********************************************
+	{
+		final arr = [1, 2, 3, 4, 5];
+
+		assertEquals((1...6).asArray(), arr);
+		assert((0...4).asArray().toString() == "0,1,2,3");
+	}
+
+	//**********************************************
 	// * asList
 	//**********************************************
 	{
@@ -146,6 +156,22 @@ function main() {
 
 		assertEquals(arr.asVector().toArray(), arr);
 		assertEquals(arr.map(12 * _).filter(_ < 30).asVector().toArray(), [12, 24]);
+	}
+
+	//**********************************************
+	// * concat
+	//**********************************************
+	{
+		final arr = [1, 2, 3];
+		final arr2 = [4, 5, 6];
+
+		assertEquals(arr.concat(arr2), [1, 2, 3, 4, 5, 6]);
+		assertEquals(arr.filter(_ == 3).concat(arr2), [3, 4, 5, 6]);
+		assertEquals(arr.concat(arr2).filter(_ == 3), [3]);
+		assertEquals(arr.concat(arr2.filter(_ == 6)), [1, 2, 3, 6]);
+		assertEquals(arr.filter(_ == 3).concat(arr2.filter(_ == 6)), [3, 6]);
+		assertEquals(arr.concat(arr2.filter(_ == 6)).filter(_ == 3), [3]);
+		assertEquals((0...10).concat((10...20).concat((20...30).concat(30...40))), (0...40).asArray());
 	}
 
 	//**********************************************

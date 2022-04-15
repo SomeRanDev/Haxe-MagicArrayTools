@@ -62,6 +62,9 @@ function parseAndBuild(name: String, ethis: Expr, args: Array<Expr>) {
 @:noUsing macro function indexOf(ethis: Expr, args: Array<Expr>)
 	return parseAndBuild("indexOf", ethis, args);
 
+@:noUsing macro function asArray(ethis: Expr, args: Array<Expr>)
+	return parseAndBuild("asArray", ethis, args);
+
 @:noUsing macro function asList(ethis: Expr, args: Array<Expr>)
 	return parseAndBuild("asList", ethis, args);
 

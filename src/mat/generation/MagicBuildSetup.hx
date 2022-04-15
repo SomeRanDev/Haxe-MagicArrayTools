@@ -15,7 +15,7 @@ final ExtensionMethods = [
 	"displayForLoop",
 	"map", "filter", "forEach", "forEachThen",
 	"size", "count", "isEmpty", "find", "indexOf",
-	"asList", "asVector",
+	"asArray", "asList", "asVector",
 	"concat"
 ];
 

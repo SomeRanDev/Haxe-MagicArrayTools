@@ -170,6 +170,7 @@ class ForLoop {
 			case "size": size;
 			case "isEmpty": isEmpty;
 
+			case "asArray": asArray;
 			case "asList": asList;
 			case "asVector": asVector;
 
@@ -290,6 +291,9 @@ class ForLoop {
 				break;
 			}
 		});
+	}
+
+	public function asArray() {
 	}
 
 	public function asList() {
