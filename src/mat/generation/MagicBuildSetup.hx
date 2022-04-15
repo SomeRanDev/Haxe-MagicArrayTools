@@ -15,7 +15,8 @@ final ExtensionMethods = [
 	"displayForLoop",
 	"map", "filter", "forEach", "forEachThen",
 	"size", "count", "isEmpty", "find", "indexOf",
-	"asList", "asVector"
+	"asList", "asVector",
+	"concat"
 ];
 
 var EnabledMAT = true;

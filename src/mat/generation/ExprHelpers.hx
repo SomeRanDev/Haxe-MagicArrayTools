@@ -57,15 +57,23 @@ function replaceUnderscore(e: Expr, name: String, doubleUnderscore: Null<String>
 			return {
 				pos: e.pos,
 				expr: EVars(vars.map(function(v) {
-					if(v.name == "_") {
-						v.name = name;
-					} else if(doubleUnderscore != null && v.name == "__") {
-						v.name = doubleUnderscore;
-					}
-					if(v.expr != null) {
-						v.expr = replaceUnderscore(v.expr, name, doubleUnderscore);
-					}
-					return v;
+					return {
+						name: (if(v.name == "_") {
+							name;
+						} else if(doubleUnderscore != null && v.name == "__") {
+							doubleUnderscore;
+						} else {
+							v.name;
+						}),
+						expr: (if(v.expr != null) {
+							replaceUnderscore(v.expr, name, doubleUnderscore);
+						} else {
+							null;
+						}),
+						meta: v.meta,
+						isFinal: v.isFinal,
+						type: v.type
+					};
 				}))
 			};
 		}

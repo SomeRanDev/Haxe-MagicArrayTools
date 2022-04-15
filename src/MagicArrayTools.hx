@@ -68,6 +68,9 @@ function parseAndBuild(name: String, ethis: Expr, args: Array<Expr>) {
 @:noUsing macro function asVector(ethis: Expr, args: Array<Expr>)
 	return parseAndBuild("asVector", ethis, args);
 
+@:noUsing macro function concat(ethis: Expr, args: Array<Expr>)
+	return parseAndBuild("concat", ethis, args);
+
 #end
 
 macro function buildForLoop(ethis: Expr) {

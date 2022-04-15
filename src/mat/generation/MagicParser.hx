@@ -26,6 +26,9 @@ function parseStaticCall(e: Expr, fl: ForLoop) {
 				return true;
 			}
 		}
+		case EParenthesis(_e): {
+			return parseStaticCall(_e, fl);
+		}
 		case _:
 	}
 	return false;

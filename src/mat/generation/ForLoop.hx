@@ -143,6 +143,8 @@ class ForLoop {
 			case "find": find;
 			case "indexOf": indexOf;
 
+			case "concat": concat;
+
 			case _: null;
 		}
 		if(oneParam != null) {
@@ -285,6 +287,10 @@ class ForLoop {
 	public function asVector() {
 		result = macro haxe.ds.Vector.fromArrayCopy(result);
 		complete = true;
+	}
+
+	public function concat(e: Expr) {
+		loops.push(new ForLoopInternals(e));
 	}
 
 	function genName(str: String) {
