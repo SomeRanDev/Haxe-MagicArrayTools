@@ -62,6 +62,7 @@ Now use this library's functions on an `Array`, `Iterable`, or `Iterator` and le
 | [`find`](https://github.com/RobertBorghese/Haxe-MagicArrayTools#find) | Finds the first element that matches the condition |
 | [`indexOf`](https://github.com/RobertBorghese/Haxe-MagicArrayTools#indexOf) | Returns the index of the provided element |
 | [`asList` and `asVector`](https://github.com/RobertBorghese/Haxe-MagicArrayTools#aslist-and-asvector) | Provides the result as a `haxe.ds.List` or `haxe.ds.Vector` |
+| [`concat`](https://github.com/RobertBorghese/Haxe-MagicArrayTools#concat) | Appends another `Array`, `Iterable`, or even separate for-loop |
 ---
 
 # [Features]
@@ -333,6 +334,50 @@ These functions change the resulting data-structure to either be a `haxe.ds.List
         result.push(it);
     }
     haxe.ds.Vector.fromArrayCopy(result);
+}
+```
+
+&nbsp;
+
+### `concat`
+
+Appends the provided array/elements to the current array. The output generates an additional for-loop to iterate over the new elements. This library's functions can be called on the first argument to this function, and the modifiers will be recursively flattened and applied exclusively to the new loop.
+```haxe
+(0...10).concat([100, 1000, 9999]);
+
+//    |
+//    V
+
+{
+    var result = [];
+    for(it in 0...10) {
+        result.push(it);
+    }
+    for(it in [100, 1000, 9999]) {
+        result.push(it);
+    }
+    result;
+}
+```
+
+```haxe
+// Pass a "for-loop" as an argument and it will be merged.
+(0...10).filter(_ % 2 == 0).concat( (0...10).filter(_ % 3 == 0) );
+
+//    |
+//    V
+
+{
+    var result = [];
+    for(it in 0...10) {
+        if(it % 2 != 0) continue;
+        result.push(it);
+    }
+    for(it in 0...10) {
+        if(it % 3 != 0) continue;
+        result.push(it);
+    }
+    result;
 }
 ```
 
