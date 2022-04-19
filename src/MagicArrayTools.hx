@@ -78,6 +78,9 @@ function parseAndBuild(name: String, ethis: Expr, args: Array<Expr>) {
 @:noUsing macro function find(ethis: Expr, args: Array<Expr>)
 	return parseAndBuild("find", ethis, args);
 
+@:noUsing macro function findIndex(ethis: Expr, args: Array<Expr>)
+	return parseAndBuild("findIndex", ethis, args);
+
 @:noUsing macro function indexOf(ethis: Expr, args: Array<Expr>)
 	return parseAndBuild("indexOf", ethis, args);
 
@@ -94,7 +97,6 @@ function parseAndBuild(name: String, ethis: Expr, args: Array<Expr>) {
 	return parseAndBuild("concat", ethis, args);
 
 // TODO:
-// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/findIndex
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/copyWithin
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/every
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/some

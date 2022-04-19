@@ -164,6 +164,7 @@ class ForLoop {
 
 			case "count": count;
 			case "find": find;
+			case "findIndex": findIndex;
 
 			case "concat": concat;
 
@@ -288,6 +289,21 @@ class ForLoop {
 		setAction(macro @:mergeBlock {
 			if($e2) {
 				result = _;
+				break;
+			}
+		});
+	}
+
+	public function findIndex(e: Expr) {
+		final callbackData = makeMagicCallback(e, "findIndex");
+		enableIndexTracking();
+
+		init = macro var result = -1;
+
+		final e2 = callbackData.expr;
+		setAction(macro @:mergeBlock {
+			if($e2) {
+				result = i;
 				break;
 			}
 		});

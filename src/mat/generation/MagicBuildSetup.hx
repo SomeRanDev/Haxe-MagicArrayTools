@@ -14,7 +14,7 @@ using haxe.macro.ExprTools;
 final ExtensionMethods = [
 	"displayForLoop",
 	"map", "filter", "forEach", "forEachThen",
-	"size", "count", "isEmpty", "find", "indexOf",
+	"size", "count", "isEmpty", "find", "findIndex", "indexOf",
 	"asArray", "asList", "asVector",
 	"concat"
 ];
