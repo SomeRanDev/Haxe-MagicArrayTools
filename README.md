@@ -59,7 +59,7 @@ Now use this library's functions on an `Array`, `Iterable`, or `Iterator` and le
 | [`forEach` and `forEachThen`](https://github.com/RobertBorghese/Haxe-MagicArrayTools#foreach-and-foreachthen) | Iterate and run an expression or callback |
 | [`size` and `isEmpty`](https://github.com/RobertBorghese/Haxe-MagicArrayTools#size-and-isempty) | Finds the number of elements |
 | [`count`](https://github.com/RobertBorghese/Haxe-MagicArrayTools#count) | Counts the number of elements that match the condition |
-| [`find`](https://github.com/RobertBorghese/Haxe-MagicArrayTools#find) | Finds the first element that matches the condition |
+| [`find` and `findIndex`](https://github.com/RobertBorghese/Haxe-MagicArrayTools#find-and-findindex) | Finds the first element that matches the condition |
 | [`indexOf`](https://github.com/RobertBorghese/Haxe-MagicArrayTools#indexOf) | Returns the index of the provided element |
 | [`asList` and `asVector`](https://github.com/RobertBorghese/Haxe-MagicArrayTools#aslist-and-asvector) | Provides the result as a `haxe.ds.List` or `haxe.ds.Vector` |
 | [`concat`](https://github.com/RobertBorghese/Haxe-MagicArrayTools#concat) | Appends another `Array`, `Iterable`, or even separate for-loop |
@@ -269,11 +269,12 @@ function count(callback: (T) -> Bool): Int;
 
 &nbsp;
 
-### `find`
+### `find` and `findIndex`
 
-`find` returns the first element that matches the condition.
+`find` returns the first element that matches the condition. `findIndex` does the same thing, but it returns the index of the element instead.
 ```haxe
 function find(callback: (T) -> Bool): Null<T>;
+function findIndex(callback: (T) -> Bool): Int;
 ```
 ```haxe
 ["ab", "a", "b", "cd"].find(_.length <= 1);
@@ -288,6 +289,25 @@ function find(callback: (T) -> Bool): Null<T>;
             result = it;
             break;
         }
+    }
+    result;
+}
+```
+```haxe
+vectorIterator.findIndex(_.magnitude > 3);
+
+//    |
+//    V
+
+{
+    var result = -1;
+    var i = 0;
+    for(it in vectorIterator) {
+        if(it.magnitude > 3) {
+            result = i;
+            break;
+        }
+        i++;
     }
     result;
 }
