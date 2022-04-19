@@ -142,6 +142,10 @@ Curious about the code that will be generated? Simply append `.displayForLoop()`
 
 These functions work exactly like the `Array`'s `map` and `filter` functions.
 ```haxe
+function map(callback: (T) -> U): Array<U>;
+function filter(callback: (T) -> Bool): Array<T>;
+```
+```haxe
 var arr = [1, 2, 3, 4, 5];
 
 var len = arr.filter(_ < 2).length;
@@ -157,6 +161,10 @@ assert(spaces[2] == "   ");
 ### `forEach` and `forEachThen`
 
 Calls the provided function/expression on each element in the `Array`/`Iterable`. `forEachThen` will return the array without modifying the elements. On the other hand, `forEach` returns `Void` and should be used in cases where the iterable object is not needed afterwards.
+```haxe
+function forEach(callback: (T) -> Void): Void;
+function forEachThen(callback: (T) -> Void): Array<T>;
+```
 ```haxe
 // do something 10 times
 (0...10).forEach(test);
@@ -198,6 +206,10 @@ for(it in 0...10) {
 
 `size` counts the number of elements after the other modifiers are applied. `isEmpty` is an optimized version that immediately returns `false` upon the first element found and returns `true` otherwise.
 ```haxe
+function size(): Int;
+function isEmpty(): Bool;
+```
+```haxe
 (0...5).filter(_ % 2 == 0).size();
 
 //    |
@@ -236,6 +248,9 @@ for(it in 0...10) {
 
 `count` counts the number of elements that match the condition.
 ```haxe
+function count(callback: (T) -> Bool): Int;
+```
+```haxe
 (0...20).count(_ > 10);
 
 //    |
@@ -258,6 +273,9 @@ for(it in 0...10) {
 
 `find` returns the first element that matches the condition.
 ```haxe
+function find(callback: (T) -> Bool): Null<T>;
+```
+```haxe
 ["ab", "a", "b", "cd"].find(_.length <= 1);
 
 //    |
@@ -279,7 +297,14 @@ for(it in 0...10) {
 
 ### `indexOf`
 
-`indexOf` returns the index of the first element that equals the provided argument.
+`indexOf` returns the index of the first element that equals the provided argument. This function has three arguments, but only the first one is required.
+```haxe
+function indexOf(item: T, startIndex: Int = 0, inlineItemExpr: Bool = false): Int;
+```
+
+`startIndex` dictates the number of elements that must be processed before initiating the search. This functionality will not be generated at all as long as the argument is not provided or the argument is assigned a `0` literal.
+
+`inlineItemExpr` is a compile-time argument that must either a `true` or `false` literal. It defines how the `item` expression will be used in the generated for-loop. If `true`, the expression will be inserted into the for-loop exactly as passed. If not provided or `false`, the expression will be assigned to a variable, and this variable will be used within the for-loop. Single identifiers and numbers will be automatically inlined since there is no additional runtime cost.
 ```haxe
 [22, 33, 44].indexOf(33);
 
@@ -300,11 +325,42 @@ for(it in 0...10) {
 }
 ```
 
+```haxe
+// If the third argument was "true", the "_value" variable would not be generated.
+// Instead, the comparison would be: if(it == World.FindPlayer())
+// FindPlayer might be an expensive operation, so this is not the default behavior.
+EntitiesIterator.indexOf(World.FindPlayer(), 1, false);
+
+//    |
+//    V
+
+{
+    var result = -1;
+    var i = 0;
+    final _value = World.FindPlayer();
+    var _indexOfCount: Int = 1;
+    for(it in EntitiesIterator) {
+        if(_indexOfCount > 0) {
+            _indexOfCount--;
+        } else if(it == _value) {
+            result = i;
+            break;
+        }
+        i++;
+    }
+    result;
+}
+```
+
 &nbsp;
 
 ### `asList` and `asVector`
 
 These functions change the resulting data-structure to either be a `haxe.ds.List` or `haxe.ds.Vector`.
+```haxe
+function asList(): haxe.ds.List<T>;
+function asVector(): haxe.ds.Vector<T>;
+```
 ```haxe
 (0...10).filter(_ % 3 != 0).asList();
 
@@ -342,6 +398,9 @@ These functions change the resulting data-structure to either be a `haxe.ds.List
 ### `concat`
 
 Appends the provided array/elements to the current array. The output generates an additional for-loop to iterate over the new elements. This library's functions can be called on the first argument to this function, and the modifiers will be recursively flattened and applied exclusively to the new loop.
+```haxe
+function concat(other: Array<T> | Iterable<T> | Iterator<T>): Array<T>;
+```
 ```haxe
 (0...10).concat([100, 1000, 9999]);
 
