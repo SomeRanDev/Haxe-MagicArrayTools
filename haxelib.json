@@ -1,6 +1,6 @@
 {
 	"name": "magic-array-tools",
-	"version": "1.1.0",
+	"version": "1.2.0",
 	"description": "Automatically converts chained helper functions on Arrays/Iterables into single, optimal for-loops.",
 	"url": "https://github.com/RobertBorghese/Haxe-MagicArrayTools",
 	"license": "MIT",
@@ -18,6 +18,6 @@
 		"js"
 	],
 	"classPath": "src/",
-	"releasenote": "Added \"displayForLoop\". Single Expr arrow-funcs are now inlined.",
+	"releasenote": "Added \"concat\", \"findIndex\", \"asArray\", and improved \"indexOf\".",
 	"contributors": ["RobertBorghese"]
 }
