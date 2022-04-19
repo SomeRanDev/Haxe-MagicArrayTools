@@ -146,6 +146,16 @@ class ForLoop {
 			Context.warning('Cannot call $name on completed for-loop.', callPosition);
 		}
 
+		final multiParam = switch(name) {
+			case "indexOf": indexOf;
+
+			case _: null;
+		}
+		if(multiParam != null) {
+			makeCall(multiParam, -1, e, name, callPosition);
+			return;
+		}
+
 		final oneParam = switch(name) {
 			case "map": map;
 			case "filter": filter;
@@ -154,7 +164,6 @@ class ForLoop {
 
 			case "count": count;
 			case "find": find;
-			case "indexOf": indexOf;
 
 			case "concat": concat;
 
@@ -183,7 +192,9 @@ class ForLoop {
 	}
 
 	function makeCall(f: Dynamic, paramCount: Int, params: Array<Expr>, name: String, callPosition: Position) {
-		if(paramCount == 1) {
+		if(paramCount == -1) {
+			f(params, callPosition);
+		} else if(paramCount == 1) {
 			if(params.length == 0) {
 				Context.error('One argument required for call to $name', callPosition);
 				return;
@@ -282,15 +293,81 @@ class ForLoop {
 		});
 	}
 
-	public function indexOf(e: Expr) {
+	public function indexOf(params: Array<Expr>, callPosition: Position) {
+		if(params.length == 0) {
+			Context.error('At least one argument required for call to indexOf', callPosition);
+		}
+
+		final e: Expr = params[0];
+
 		init = macro var result = -1;
 		enableIndexTracking();
-		setAction(macro @:mergeBlock {
-			if($e == _) {
-				result = i;
-				break;
+
+		final expressionList: Array<Expr> = [];
+
+		var hasStartIndex = if(params.length > 1) {
+			final startIndexExpr = params[1];
+			if(startIndexExpr.isZero()) {
+				false;
+			} else {
+				final params1Pos = params[1].pos;
+				initVars.push(macro @:pos(params1Pos) var _indexOfCount: Int = $startIndexExpr);
+				true;
 			}
-		});
+		} else {
+			false;
+		}
+
+		var forceInline = if(params.length > 2) {
+			final forceInlineExpr = params[2];
+			final forceInlineValue = forceInlineExpr.isBoolLiteral();
+			if(forceInlineValue == null) {
+				Context.error('indexOf third argument must be either "true" or "false" literal', forceInlineExpr.pos);
+			} else {
+				forceInlineValue;
+			}
+		} else {
+			false;
+		}
+
+		if(!forceInline && e.isCostly()) {
+			initVars.push(macro final _value = $e);
+			if(hasStartIndex) {
+				setAction(macro @:mergeBlock {
+					if(_indexOfCount > 0) {
+						_indexOfCount--;
+					} else if(_ == _value) {
+						result = i;
+						break;
+					}
+				});
+			} else {
+				setAction(macro @:mergeBlock {
+					if(_ == _value) {
+						result = i;
+						break;
+					}
+				});
+			}
+		} else {
+			if(hasStartIndex) {
+				setAction(macro @:mergeBlock {
+					if(_indexOfCount > 0) {
+						_indexOfCount--;
+					} else if(_ == $e) {
+						result = i;
+						break;
+					}
+				});
+			} else {
+				setAction(macro @:mergeBlock {
+					if(_ == $e) {
+						result = i;
+						break;
+					}
+				});
+			}
+		}
 	}
 
 	public function asArray() {

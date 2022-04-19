@@ -287,10 +287,10 @@ for(it in 0...10) {
 //    V
 
 {
-    var result = 0;
+    var result = -1;
     var i = 0;
     for(it in [22, 33, 44]) {
-        if(33 == it) {
+        if(it == 33) {
             result = i;
             break;
         }

@@ -127,6 +127,21 @@ function main() {
 		assert(arr.indexOf(1) == 0);
 		assert(arr.map("" + _).indexOf("5") == 4);
 		assert(arr.map(12 * _).filter(_ < 30).indexOf(24) == 1);
+
+		assert(arr.indexOf(2, 0) == 1);
+		assert(arr.indexOf(5, 0, false) == 4);
+		assert(arr.map("" + _).indexOf("1", 0) == 0);
+		assert(arr.map(12 * _).filter(_ < 30).indexOf(24, 0, false) == 1);
+
+		assert(arr.indexOf(4, 0, true) == 3);
+		assert(arr.indexOf(1, 0, true) == 0);
+		assert(arr.map("" + _).indexOf("3", 0, true) == 2);
+		assert(arr.map(12 * _).filter(_ > 30).indexOf(36, 0, true) == 0);
+
+		final arr2 = [1, 2, 3, 1, 2, 3];
+
+		assert(arr2.indexOf(3, 4) == 5);
+		assert(arr2.indexOf(1, 1) == 3);
 	}
 
 	//**********************************************

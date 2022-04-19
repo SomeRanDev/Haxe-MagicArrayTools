@@ -16,12 +16,31 @@ using haxe.macro.ExprTools;
 #if macro
 
 function parse(name: String, ethis: Expr, args: Array<Expr>) {
+	if(args.length > 1) {
+		final eargs = [ethis];
+		for(e in args) {
+			eargs.push(e);
+		}
+
+		final pos = Context.currentPos();
+
+		final e: Expr = {
+			pos: pos,
+			expr: ECall({
+				pos: pos,
+				expr: EField({
+					pos: pos,
+					expr: EConst(CIdent("MagicArrayTools"))
+				}, name)
+			}, eargs)
+		};
+
+		return parseStaticCalls(e);
+	}
+
 	return args.length == 0 ?
 		parseStaticCalls(macro MagicArrayTools.$name($ethis)) :
-		(args.length == 1 ?
-			parseStaticCalls(macro MagicArrayTools.$name($ethis, $e{args[0]})) :
-			parseStaticCalls(macro MagicArrayTools.$name($ethis, $a{args}))
-		);
+		parseStaticCalls(macro MagicArrayTools.$name($ethis, $e{args[0]}));
 }
 
 function parseAndBuild(name: String, ethis: Expr, args: Array<Expr>) {
@@ -73,6 +92,15 @@ function parseAndBuild(name: String, ethis: Expr, args: Array<Expr>) {
 
 @:noUsing macro function concat(ethis: Expr, args: Array<Expr>)
 	return parseAndBuild("concat", ethis, args);
+
+// TODO:
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/findIndex
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/copyWithin
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/every
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/some
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/fill
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce
+
 
 #end
 

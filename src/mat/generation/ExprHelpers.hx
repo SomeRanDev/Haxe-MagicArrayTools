@@ -7,6 +7,9 @@ using mat.generation.ExprHelpers;
 import haxe.macro.Expr;
 using haxe.macro.ExprTools;
 
+// If the expression is EMeta, and the meta's name matched the provided name,
+// the internal expression is returned.
+// Otherwisde, null is returned.
 function isMeta(e: Expr, metaName: String): Expr {
 	switch(e.expr) {
 		case EMeta(s, e): {
@@ -19,6 +22,8 @@ function isMeta(e: Expr, metaName: String): Expr {
 	return null;
 }
 
+// If the expression is EReturn, the internal expression is returned.
+// Otherwise, null is returned.
 function isReturn(e: Expr): Null<Expr> {
 	return switch(e.expr) {
 		case EReturn(ex): ex;
@@ -36,6 +41,55 @@ function isReturn(e: Expr): Null<Expr> {
 			};
 		}
 		case _: null;
+	}
+}
+
+function isBoolLiteral(e: Expr): Null<Bool> {
+	return switch(e.expr) {
+		case EConst(c): {
+			switch(c) {
+				case CIdent(s): {
+					if(s == "true") true;
+					else if(s == "false") false;
+					else null;
+				}
+				case _: null;
+			}
+		}
+		case _: null;
+	}
+}
+
+function isZero(e: Expr): Bool {
+	return switch(e.expr) {
+		case EConst(c): {
+			switch(c) {
+				case CInt(s): s == "0";
+				case _: false;
+			}
+		}
+		case _: false;
+	}
+}
+
+// For functions like "indexOf", where the argument should be an object,
+// it's likely an operation expression may be passed (function call, array access, etc.).
+// If it's an operation, I want to store it in variable instead of inlining in the for-loop.
+// This function checks to see if the operation has a runtime cost beyond variable access.
+function isCostly(e: Expr) {
+	return switch(e.expr) {
+		case EConst(c): {
+			switch(c) {
+				// if single-quotes, there could be an expression in it?
+				case CString(_, SingleQuotes): true;
+				// regexp converts to object creation on most platforms?
+				case CRegexp(_, _): true;
+				case _: false;
+			}
+		}
+		case EParenthesis(e2): isCostly(e2);
+		case EMeta(_, e2): isCostly(e2);
+		case _: true;
 	}
 }
 
