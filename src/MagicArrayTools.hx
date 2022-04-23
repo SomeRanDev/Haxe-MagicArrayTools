@@ -1,12 +1,10 @@
 package;
 
 #if macro
-import mat.generation.ForLoop;
 import mat.generation.MagicParser.parseStaticCalls;
 
 import haxe.macro.Expr;
 import haxe.macro.Context;
-import haxe.macro.Compiler;
 
 using haxe.macro.ExprTools;
 #end
@@ -84,6 +82,12 @@ function parseAndBuild(name: String, ethis: Expr, args: Array<Expr>) {
 @:noUsing macro function indexOf(ethis: Expr, args: Array<Expr>)
 	return parseAndBuild("indexOf", ethis, args);
 
+@:noUsing macro function every(ethis: Expr, args: Array<Expr>)
+	return parseAndBuild("every", ethis, args);
+
+@:noUsing macro function some(ethis: Expr, args: Array<Expr>)
+	return parseAndBuild("some", ethis, args);
+
 @:noUsing macro function asArray(ethis: Expr, args: Array<Expr>)
 	return parseAndBuild("asArray", ethis, args);
 
@@ -98,8 +102,6 @@ function parseAndBuild(name: String, ethis: Expr, args: Array<Expr>) {
 
 // TODO:
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/copyWithin
-// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/every
-// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/some
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/fill
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce
 

@@ -166,6 +166,9 @@ class ForLoop {
 			case "find": find;
 			case "findIndex": findIndex;
 
+			case "every": every;
+			case "some": some;
+
 			case "concat": concat;
 
 			case _: null;
@@ -384,6 +387,34 @@ class ForLoop {
 				});
 			}
 		}
+	}
+
+	public function every(e: Expr) {
+		final callbackData = makeMagicCallback(e, "every");
+
+		init = macro var result = true;
+
+		final e2 = callbackData.expr;
+		setAction(macro @:mergeBlock {
+			if(!($e2)) {
+				result = false;
+				break;
+			}
+		});
+	}
+
+	public function some(e: Expr) {
+		final callbackData = makeMagicCallback(e, "some");
+
+		init = macro var result = false;
+
+		final e2 = callbackData.expr;
+		setAction(macro @:mergeBlock {
+			if($e2) {
+				result = true;
+				break;
+			}
+		});
 	}
 
 	public function asArray() {
