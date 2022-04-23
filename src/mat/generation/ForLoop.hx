@@ -21,6 +21,7 @@ class ForLoop {
 	var initVars: Array<Expr>;
 	var loops: Array<ForLoopInternals>;
 	var result: Null<Expr>;
+	var subsequentCondition: Null<Expr>;
 
 	var initVarNames: Map<String,Int>;
 
@@ -107,6 +108,14 @@ class ForLoop {
 
 		final indexTrackingInit = indexTracking ? (macro var i = 0) : (macro @:mergeBlock {});
 		final exprs = loops.map(fl -> fl.build(indexTracking));
+		if(subsequentCondition != null) {
+			for(i in 1...exprs.length) {
+				final e = exprs[i];
+				exprs[i] = macro if($subsequentCondition) {
+					$e;
+				}
+			}
+		}
 		return macro {
 			$init;
 			@:mergeBlock $b{initVars};
@@ -148,6 +157,9 @@ class ForLoop {
 
 		final multiParam = switch(name) {
 			case "indexOf": indexOf;
+
+			case "reduce": reduce;
+			case "fill": fill;
 
 			case _: null;
 		}
@@ -277,6 +289,7 @@ class ForLoop {
 
 	public function isEmpty() {
 		init = macro var result = true;
+		subsequentCondition = macro result;
 		setAction(macro @:mergeBlock {
 			result = false;
 			break;
@@ -287,6 +300,7 @@ class ForLoop {
 		final callbackData = makeMagicCallback(e, "find");
 
 		init = macro var result = null;
+		subsequentCondition = macro result == null;
 
 		final e2 = callbackData.expr;
 		setAction(macro @:mergeBlock {
@@ -302,6 +316,7 @@ class ForLoop {
 		enableIndexTracking();
 
 		init = macro var result = -1;
+		subsequentCondition = macro result == -1;
 
 		final e2 = callbackData.expr;
 		setAction(macro @:mergeBlock {
@@ -320,6 +335,7 @@ class ForLoop {
 		final e: Expr = params[0];
 
 		init = macro var result = -1;
+		subsequentCondition = macro result == -1;
 		enableIndexTracking();
 
 		final expressionList: Array<Expr> = [];
@@ -330,7 +346,7 @@ class ForLoop {
 				false;
 			} else {
 				final params1Pos = params[1].pos;
-				initVars.push(macro @:pos(params1Pos) var _indexOfCount: Int = $startIndexExpr);
+				initVars.push(macro @:pos(params1Pos) var _indexOf_indexOfCount: Int = $startIndexExpr);
 				true;
 			}
 		} else {
@@ -353,8 +369,8 @@ class ForLoop {
 			initVars.push(macro final _value = $e);
 			if(hasStartIndex) {
 				setAction(macro @:mergeBlock {
-					if(_indexOfCount > 0) {
-						_indexOfCount--;
+					if(_indexOf_indexOfCount > 0) {
+						_indexOf_indexOfCount--;
 					} else if(_ == _value) {
 						result = i;
 						break;
@@ -371,8 +387,8 @@ class ForLoop {
 		} else {
 			if(hasStartIndex) {
 				setAction(macro @:mergeBlock {
-					if(_indexOfCount > 0) {
-						_indexOfCount--;
+					if(_indexOf_indexOfCount > 0) {
+						_indexOf_indexOfCount--;
 					} else if(_ == $e) {
 						result = i;
 						break;
@@ -393,6 +409,7 @@ class ForLoop {
 		final callbackData = makeMagicCallback(e, "every");
 
 		init = macro var result = true;
+		subsequentCondition = macro result;
 
 		final e2 = callbackData.expr;
 		setAction(macro @:mergeBlock {
@@ -407,12 +424,40 @@ class ForLoop {
 		final callbackData = makeMagicCallback(e, "some");
 
 		init = macro var result = false;
+		subsequentCondition = macro !result;
 
 		final e2 = callbackData.expr;
 		setAction(macro @:mergeBlock {
 			if($e2) {
 				result = true;
 				break;
+			}
+		});
+	}
+
+	public function reduce(params: Array<Expr>, callPosition: Position) {
+		if(params.length == 0) {
+			Context.error('At least one argument required for call to reduce', callPosition);
+		}
+
+		final callback = params[0];
+		if(!callback.isFunction(2)) {
+			Context.error('First argument of reduce must be function with 2 arguments', callPosition);
+		}
+
+		final fName = genName("reduce");
+		usedName("reduce");
+
+		init = macro var result = null;
+		initVars.push(macro var _reduce_hasFoundValue = false);
+		initVars.push(macro final $fName = $callback);
+
+		setAction(macro @:mergeBlock {
+			if(!_reduce_hasFoundValue) {
+				_reduce_hasFoundValue = true;
+				result = _;
+			} else {
+				result = $i{fName}(_, result);
 			}
 		});
 	}
@@ -433,6 +478,67 @@ class ForLoop {
 	public function concat(e: Expr) {
 		final fl: ForLoop = parseStaticCalls(MagicBuildSetup.convertInternal(e), true);
 		mergeSubForLoop(fl);
+	}
+
+	public function fill(params: Array<Expr>, callPosition: Position) {
+		final paramLen = params.length;
+		if(paramLen == 0) {
+			Context.error('At least one argument required for call to fill', callPosition);
+		}
+
+		final e = params[0];
+		final p = e.pos;
+		final _fill_fillValue = if(e.isCostly()) {
+			initVars.push(macro @:pos(p) var _fill_fillValue = $e);
+			macro _fill_fillValue;
+		} else {
+			e;
+		}
+
+		if(paramLen == 1) {
+			final pre = macro @:pos(p) final __ = $_fill_fillValue;
+			addPreAction(pre, true);
+		} else if(paramLen >= 2 && paramLen <= 3) {
+			enableIndexTracking();
+
+			final e2 = params[1];
+			final p2 = e2.pos;
+			final _fill_fillIndex = if(e2.isCostly()) {
+				initVars.push(macro @:pos(p2) var _fill_fillIndex = $e2);
+				macro _fill_fillIndex;
+			} else {
+				e2;
+			}
+
+			final pre = if(paramLen == 2) {
+				macro @:mergeBlock {
+					final __ = if(@:pos(p2) (i >= $_fill_fillIndex)) {
+						@:pos(p) $_fill_fillValue;
+					} else {
+						_;
+					}
+				};
+			} else {
+				final e3 = params[2];
+				final p3 = e3.pos;
+				final _fill_fillIndexEnd = if(e3.isCostly()) {
+					initVars.push(macro @:pos(p3) var _fill_fillIndexEnd = $e3);
+					macro _fill_fillIndexEnd;
+				} else {
+					e3;
+				}
+
+				macro @:mergeBlock {
+					final __ = if(@:pos(p2) (i >= $_fill_fillIndex) && @:pos(p3) (i < $_fill_fillIndexEnd)) {
+						@:pos(p) $_fill_fillValue;
+					} else {
+						_;
+					}
+				};
+			}
+
+			addPreAction(pre, true);
+		}
 	}
 
 	function genName(str: String) {

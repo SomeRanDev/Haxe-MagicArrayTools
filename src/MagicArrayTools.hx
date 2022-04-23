@@ -88,6 +88,9 @@ function parseAndBuild(name: String, ethis: Expr, args: Array<Expr>) {
 @:noUsing macro function some(ethis: Expr, args: Array<Expr>)
 	return parseAndBuild("some", ethis, args);
 
+@:noUsing macro function reduce(ethis: Expr, args: Array<Expr>)
+	return parseAndBuild("reduce", ethis, args);
+
 @:noUsing macro function asArray(ethis: Expr, args: Array<Expr>)
 	return parseAndBuild("asArray", ethis, args);
 
@@ -100,10 +103,11 @@ function parseAndBuild(name: String, ethis: Expr, args: Array<Expr>) {
 @:noUsing macro function concat(ethis: Expr, args: Array<Expr>)
 	return parseAndBuild("concat", ethis, args);
 
+@:noUsing macro function fill(ethis: Expr, args: Array<Expr>)
+	return parseAndBuild("fill", ethis, args);
+
 // TODO:
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/copyWithin
-// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/fill
-// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce
 
 
 #end

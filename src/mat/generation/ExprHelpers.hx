@@ -72,6 +72,15 @@ function isZero(e: Expr): Bool {
 	}
 }
 
+function isFunction(e: Expr, argCount: Int): Bool {
+	return switch(e.expr) {
+		case EFunction(k, f): {
+			f.args != null && f.args.length == argCount;
+		}
+		case _: false;
+	}
+}
+
 // For functions like "indexOf", where the argument should be an object,
 // it's likely an operation expression may be passed (function call, array access, etc.).
 // If it's an operation, I want to store it in variable instead of inlining in the for-loop.
