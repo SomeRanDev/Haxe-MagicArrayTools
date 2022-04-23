@@ -206,7 +206,7 @@ function main() {
 		assert(arr.concat(6...10).reduce((a, b) -> a * b) == 362880);
 		assert(arr.reduce((a, b) -> Std.int(Math.max(a, b))) == 5);
 		assert(arr.reduce(function(a, b) { return a + b; }) == 15);
-		assert(arr.reduce((a, b) -> a) == 1)
+		assert(arr.reduce((a, b) -> a) == 1);
 	}
 
 	//**********************************************
