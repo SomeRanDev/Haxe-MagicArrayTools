@@ -109,7 +109,6 @@ function parseAndBuild(name: String, ethis: Expr, args: Array<Expr>) {
 // TODO:
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/copyWithin
 
-
 #end
 
 macro function buildForLoop(ethis: Expr) {
