@@ -457,7 +457,7 @@ class ForLoop {
 				_reduce_hasFoundValue = true;
 				result = _;
 			} else {
-				result = $i{fName}(_, result);
+				result = $i{fName}(result, _);
 			}
 		});
 	}
