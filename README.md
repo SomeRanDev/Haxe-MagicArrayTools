@@ -61,8 +61,11 @@ Now use this library's functions on an `Array`, `Iterable`, or `Iterator` and le
 | [`count`](https://github.com/RobertBorghese/Haxe-MagicArrayTools#count) | Counts the number of elements that match the condition |
 | [`find` and `findIndex`](https://github.com/RobertBorghese/Haxe-MagicArrayTools#find-and-findindex) | Finds the first element that matches the condition |
 | [`indexOf`](https://github.com/RobertBorghese/Haxe-MagicArrayTools#indexOf) | Returns the index of the provided element |
+| [`every` and `some`](https://github.com/RobertBorghese/Haxe-MagicArrayTools#every-and-some) | Check if some or all elements match the condition |
+| [`reduce`](https://github.com/RobertBorghese/Haxe-MagicArrayTools#reduce) | Reduce to single value summed together using function |
 | [`asList` and `asVector`](https://github.com/RobertBorghese/Haxe-MagicArrayTools#aslist-and-asvector) | Provides the result as a `haxe.ds.List` or `haxe.ds.Vector` |
 | [`concat`](https://github.com/RobertBorghese/Haxe-MagicArrayTools#concat) | Appends another `Array`, `Iterable`, or even separate for-loop |
+| [`fill`](https://github.com/RobertBorghese/Haxe-MagicArrayTools#fill) | Fill a subsection or the entire `Array` with a value |
 ---
 
 # [Features]
@@ -374,6 +377,80 @@ EntitiesIterator.indexOf(World.FindPlayer(), 1, false);
 
 &nbsp;
 
+### `every` and `some`
+
+`every` returns `true` if every element returns `true` when passed to the provided callback. On the other hand, `some` returns `true` as long as at least one element passes.
+```haxe
+function every(callback: (T) -> Bool): Bool;
+function some(callback: (T) -> Bool): Bool;
+```
+```haxe
+[75, 7, 12, 93].every(_ > 0);
+
+//    |
+//    V
+
+{
+    var result = true;
+    for(it in [75, 7, 12, 93]) {
+        if(it <= 0) {
+            result = false;
+            break;
+        }
+    }
+    result;
+}
+```
+
+```haxe
+(1...10).some(_ == 4);
+
+//    |
+//    V
+
+{
+    var result = false;
+    for(it in 1...10) {
+        if(it == 4) {
+            result = true;
+            break;
+        }
+    }
+    result;
+}
+```
+
+&nbsp;
+
+### `reduce`
+
+`reduce` calls a function on every element to accumulate all the values. The returned value of the previous call is passed as the first argument; the second argument is the element being iterated on. The returned value of the final call is what `reduce` returns.
+```haxe
+function reduce(callback: (T, T) -> T): T;
+```
+```haxe
+["a", "b", "c", "d"].reduce((a, b) -> a + b);
+
+//    |
+//    V
+
+{
+    var result = null;
+    var _hasFoundValue = false;
+    for(it in ["a", "b", "c", "d"]) {
+        if(!_hasFoundValue) {
+            _hasFoundValue = true;
+            result = it;
+        } else {
+            result = result + it;
+        };
+    };
+    result;
+}
+```
+
+&nbsp;
+
 ### `asList` and `asVector`
 
 These functions change the resulting data-structure to either be a `haxe.ds.List` or `haxe.ds.Vector`.
@@ -456,6 +533,51 @@ function concat(other: Array<T> | Iterable<T> | Iterator<T>): Array<T>;
         if(it % 3 != 0) continue;
         result.push(it);
     }
+    result;
+}
+```
+
+&nbsp;
+
+### `fill`
+
+`fill` fills the resulting `Array` with the provided value. A subsection can be filled using the second and third arguments.
+```haxe
+function fill(value: T, startIndex: Int = 0, endIndex: Int = this.length): Array<T>;
+```
+```haxe
+[1, 2, 3].fill(10);
+
+//    |
+//    V
+
+{
+    var result = [];
+    for(it in [1, 2, 3]) {
+        var it2 = 10;
+        result.push(it2);
+    };
+    result;
+}
+```
+```haxe
+(0...10).fill(999, 2, 8);
+
+//    |
+//    V
+
+{
+    var result = [];
+    var i = 0;
+    for(it in (0 ... 10)) {
+        var it2 = if((i >= 2) && (i < 8)) {
+            999;
+        } else {
+            it;
+        };
+        result.push(it2);
+        i++;
+    };
     result;
 }
 ```
