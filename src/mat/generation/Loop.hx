@@ -1,25 +1,41 @@
 package mat.generation;
 
-#if macro
-
-using mat.generation.ExprHelpers;
+#if (macro || mat_runtime)
 
 import haxe.macro.Expr;
 
-class ForLoopInternals {
+using mat.extension_functions.ExprEx;
+
+/**
+	The `mat.generation.LoopBuilder` may generate multiple loops, but this class represents an
+	individual `for` or `while` loop.
+**/
+class Loop {
 	var iterated: Expr;
+	var iteratedOriginalType: Null<ComplexType>;
 	var preActions: Array<Expr>;
 	var action: Expr;
 
 	var currentName: String;
 	var currentNameId: Int;
 
-	public function new(e: Expr) {
-		iterated = e;
+	public function new(expression: Expr, expressionType: Null<ComplexType>) {
+		iterated = preprocessIteratedExpression(expression, expressionType);
+		iteratedOriginalType = expressionType;
 		preActions = [];
 		action = macro result.push(_);
 		currentName = "it";
 		currentNameId = 1;
+	}
+
+	static function preprocessIteratedExpression(
+		expression: Expr,
+		expressionType: Null<ComplexType>
+	) {
+		return switch(expressionType) {
+			case (macro : Int) | (macro : StdTypes.Int): macro 0...$expression;
+			case _: expression;
+		};
 	}
 
 	public function addPreAction(a: Expr, incrementMainVar: Bool) {

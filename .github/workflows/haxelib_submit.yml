@@ -1,0 +1,27 @@
+name: "Submit to Haxelib"
+on: workflow_dispatch
+
+jobs:
+  haxelib_submit:
+    name: Publish to Haxelib
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install Haxe
+        uses: krdlab/setup-haxe@v1
+        with:
+          haxe-version: latest
+
+      - name: ZIP Haxelib Project
+        uses: edgarrc/action-7z@v1
+        with:
+          args: 7z a magic-array-tools.zip src/* LICENSE haxelib.json
+
+      - name: Submit to Haxelib
+        run: |
+          haxe -version
+          haxelib submit magic-array-tools.zip ${{ secrets.HAXELIB_PASSWORD }} --always
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

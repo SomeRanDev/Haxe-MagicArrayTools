@@ -1,0 +1,8 @@
+-D mat_runtime
+--macro nullSafety("mat")
+--macro nullSafety("MagicArrayTools")
+
+-cp src
+
+MagicArrayTools
+mat

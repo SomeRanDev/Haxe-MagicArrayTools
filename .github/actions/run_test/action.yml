@@ -1,0 +1,79 @@
+name: "Run Haxe test/Test.hxml"
+description: "Runs Haxe test/Test.hxml on JS, C++, and HashLink"
+
+inputs:
+  haxe-version:
+    required: true
+    description: "The version of the Haxe compiler to use."
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Install Haxe
+      uses: krdlab/setup-haxe@v1
+      with:
+        haxe-version: ${{ inputs.haxe-version }}
+
+    - name: Check Haxe
+      run: haxe -version
+      shell: bash
+
+    # -------------------------------------------
+    # JavaScript
+
+    - name: Install Node
+      uses: actions/setup-node@v4
+
+    - name: Check Node
+      run: node -v
+      shell: bash
+
+    - name: Compile Test for JS
+      run: haxe Test.hxml -js Test.js
+      working-directory: test
+      shell: bash
+
+    - name: Test JS
+      run: node Test.js
+      working-directory: test
+      shell: bash
+
+    # -------------------------------------------
+    # C++
+    # Note: hxcpp currently doesn't work on Haxe 5 (latest)
+
+    - name: Setup Hxcpp
+      if: ${{ inputs.haxe-version != 'latest' }}
+      run: haxelib install hxcpp
+      shell: bash
+
+    - name: Compile Test for C++
+      if: ${{ inputs.haxe-version != 'latest' }}
+      run: haxe Test.hxml -cpp bin
+      working-directory: test
+      shell: bash
+
+    - name: Test C++
+      if: ${{ inputs.haxe-version != 'latest' }}
+      run: ./bin/Test
+      working-directory: test
+      shell: bash
+
+    # -------------------------------------------
+    # HashLink
+
+    - name: Setup HashLink
+      uses: cedx/setup-hashlink@v6.2.0
+
+    - name: Compile Test for HashLink
+      run: haxe Test.hxml -hl Test.hl
+      working-directory: test
+      shell: bash
+
+    - name: Test HashLink
+      run: hl Test.hl
+      working-directory: test
+      shell: bash

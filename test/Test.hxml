@@ -2,7 +2,3 @@
 -cp .
 
 -main Test
-
---macro mat.generation.MagicBuildSetup.setup()
-
--js Test.js

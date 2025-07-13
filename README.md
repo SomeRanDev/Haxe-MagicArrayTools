@@ -1,4 +1,5 @@
-# Magic Array Tools (Haxe)
+<img src="img/Logo.png" /> 
+
 Extension functions for `Array`s/`Iterable`s that are compile-time converted to a single, optimal for-loop. Never again be concerned about performance when you need to throw on a couple `map`s and `filter`s. Any number of array modifications is guarenteed to run through just one loop at runtime!
 
 ```haxe
@@ -11,7 +12,8 @@ var arr = ["a", "i", "the", "and"];
 
 // At compile-time this code is
 // converted into a single for-loop.
-arr.filter(s -> s.length == 1)
+arr.magiter()
+   .filter(s -> s.length == 1)
    .map(s -> s.charCodeAt(0))
    .filter(s -> s != null)
    .count(s -> s == 105);
@@ -52,20 +54,19 @@ Now use this library's functions on an `Array`, `Iterable`, or `Iterator` and le
 
 | Feature | Description |
 | --- | --- |
-| [Inline Mode](https://github.com/RobertBorghese/Haxe-MagicArrayTools#inline-mode) | A shorter, faster syntax for callbacks |
-| [Disable Auto For-Loop](https://github.com/RobertBorghese/Haxe-MagicArrayTools#disable-auto-for-loop) | Temporarily or permanently disable the automatic for-loop creation |
-| [Display For-Loop](https://github.com/RobertBorghese/Haxe-MagicArrayTools#display-for-loop) | Stringifies and traces the for-loop code that will be generated for debugging purposes |
-| [`map` and `filter`](https://github.com/RobertBorghese/Haxe-MagicArrayTools#map-and-filter) | Remapping and filtering functions |
-| [`forEach` and `forEachThen`](https://github.com/RobertBorghese/Haxe-MagicArrayTools#foreach-and-foreachthen) | Iterate and run an expression or callback |
-| [`size` and `isEmpty`](https://github.com/RobertBorghese/Haxe-MagicArrayTools#size-and-isempty) | Finds the number of elements |
-| [`count`](https://github.com/RobertBorghese/Haxe-MagicArrayTools#count) | Counts the number of elements that match the condition |
-| [`find` and `findIndex`](https://github.com/RobertBorghese/Haxe-MagicArrayTools#find-and-findindex) | Finds the first element that matches the condition |
-| [`indexOf`](https://github.com/RobertBorghese/Haxe-MagicArrayTools#indexOf) | Returns the index of the provided element |
-| [`every` and `some`](https://github.com/RobertBorghese/Haxe-MagicArrayTools#every-and-some) | Check if some or all elements match the condition |
-| [`reduce`](https://github.com/RobertBorghese/Haxe-MagicArrayTools#reduce) | Reduce to single value summed together using function |
-| [`asList` and `asVector`](https://github.com/RobertBorghese/Haxe-MagicArrayTools#aslist-and-asvector) | Provides the result as a `haxe.ds.List` or `haxe.ds.Vector` |
-| [`concat`](https://github.com/RobertBorghese/Haxe-MagicArrayTools#concat) | Appends another `Array`, `Iterable`, or even separate for-loop |
-| [`fill`](https://github.com/RobertBorghese/Haxe-MagicArrayTools#fill) | Fill a subsection or the entire `Array` with a value |
+| [Inline Mode](https://github.com/SomeRanDev/Haxe-MagicArrayTools#inline-mode) | A shorter, faster syntax for callbacks |
+| [Display Generated Loop](https://github.com/SomeRanDev/Haxe-MagicArrayTools#display-generated-result) | Stringifies and traces the code that will be generated for debugging purposes |
+| [`map` and `filter`](https://github.com/SomeRanDev/Haxe-MagicArrayTools#map-and-filter) | Remapping and filtering functions |
+| [`forEach` and `forEachThen`](https://github.com/SomeRanDev/Haxe-MagicArrayTools#foreach-and-foreachthen) | Iterate and run an expression or callback |
+| [`size` and `isEmpty`](https://github.com/SomeRanDev/Haxe-MagicArrayTools#size-and-isempty) | Finds the number of elements |
+| [`count`](https://github.com/SomeRanDev/Haxe-MagicArrayTools#count) | Counts the number of elements that match the condition |
+| [`find` and `findIndex`](https://github.com/SomeRanDev/Haxe-MagicArrayTools#find-and-findindex) | Finds the first element that matches the condition |
+| [`indexOf`](https://github.com/SomeRanDev/Haxe-MagicArrayTools#indexOf) | Returns the index of the provided element |
+| [`every` and `some`](https://github.com/SomeRanDev/Haxe-MagicArrayTools#every-and-some) | Check if some or all elements match the condition |
+| [`reduce`](https://github.com/SomeRanDev/Haxe-MagicArrayTools#reduce) | Reduce to single value summed together using function |
+| [`asList` and `asVector`](https://github.com/SomeRanDev/Haxe-MagicArrayTools#aslist-and-asvector) | Provides the result as a `haxe.ds.List` or `haxe.ds.Vector` |
+| [`concat`](https://github.com/SomeRanDev/Haxe-MagicArrayTools#concat) | Appends another `Array`, `Iterable`, or even separate for-loop |
+| [`fill`](https://github.com/SomeRanDev/Haxe-MagicArrayTools#fill) | Fill a subsection or the entire `Array` with a value |
 ---
 
 # [Features]
@@ -76,54 +77,25 @@ While local functions can be passed as an argument, for short/one-line operation
 
 Any function that takes a callback as an argument can accept an expression (`Expr`) that's just the callback body. Use a single underscore identifier (`_`) to represent the argument that would normally be passed to the callback (usually the processed array item). This expression will be placed and typed directly in the resuling for-loop.
 ```haxe
-[1, 2, 3].map(i -> "" + i); // Error:
-                            // Int should be String
-                            // ... For function argument 'i'
+[1, 2, 3].magiter().map(i -> "" + i); // Error:
+                                      // Int should be String
+                                      // ... For function argument 'i'
 
-[1, 2, 3].map("" + _);            // Fix using inline mode!
-[1, 2, 3].map((i:Int) -> "" + i); // (Explicit-typing also works)
+[1, 2, 3].magiter().map("" + _);            // Fix using inline mode!
+[1, 2, 3].magiter().map((i:Int) -> "" + i); // (Explicit-typing also works)
 ```
 
 &nbsp;
 
-### Disable Auto For-Loop
+### Display Generated Loop
 
-In certain circumstances, one may want to disable the automatic for-loop building. Using the `@disableAutoForLoop` metadata will disable this for all subexpressions. However, for-loops can still be manually constructed by appending `.buildForLoop()`.
-
-If manually building for-loops using `buildForLoop()` is preferred, defining the compilation flag (`-D disableAutoForLoop`) will disable the automatic building for the entire project.
-```haxe
-class ConflictTester {
-    public function new() {}
-    public function map(c: (Int) -> Int) return 1234;
-    public function iterator(): Iterator<Int> { return 0...5; }
-}
-
-// ---
-
-final obj = new ConflictTester();
-
-// This generates a for-loop.
-obj.map(i -> i);
-
-// Unable to call "map" function on this
-// Iterable unless auto for-loops are disabled.
-@disableAutoForLoop {
-    obj.map(i -> i);                // 1234
-    obj.map(i -> i).buildForLoop(); // [0, 1, 2, 3, 4]
-}
-```
-
-&nbsp;
-
-### Display For-Loop
-
-Curious about the code that will be generated? Simply append `.displayForLoop()` to the method chain, and the generated for-loop expression will be traced/printed to the console.
+Curious about the code that will be generated? Simply append `.displayResult()` to the method chain, and the generated for-loop expression will be traced/printed to the console at compile-time! You can even place it between calls to debug up to a certain point in the chain.
 ```haxe
 ["a", "b", "c"]
     .map(_.indexOf("b"))
     .filter(_ >= 0)
     .asList()
-    .displayForLoop();
+    .displayResult();
 
 // -- OUTPUT --
 //
@@ -151,11 +123,11 @@ function filter(callback: (T) -> Bool): Array<T>;
 ```haxe
 var arr = [1, 2, 3, 4, 5];
 
-var len = arr.filter(_ < 2).length;
+var len = arr.magiter().filter(_ < 2).length;
 assert(len == 1);
 
 
-var spaces = arr.map(StringTools.lpad("", " ", _));
+var spaces = arr.magiter().map(StringTools.lpad("", " ", _));
 assert(spaces[2] == "   ");
 ```
 
@@ -170,7 +142,7 @@ function forEachThen(callback: (T) -> Void): Array<T>;
 ```
 ```haxe
 // do something 10 times
-(0...10).forEach(test);
+(0...10).magiter().forEach(test);
 
 //    |
 //    V
@@ -183,6 +155,7 @@ for(it in 0...10) {
 ```haxe
 // add arbitrary behavior within for-loop
 ["i", "a", "bug", "hello"]
+    .magiter()
     .filter(_.length == 1)
     .forEachThen(trace("Letter is: " + _))
     .map(_.charCodeAt(0));
@@ -213,7 +186,7 @@ function size(): Int;
 function isEmpty(): Bool;
 ```
 ```haxe
-(0...5).filter(_ % 2 == 0).size();
+(0...5).magiter().filter(_ % 2 == 0).size();
 
 //    |
 //    V
@@ -229,7 +202,7 @@ function isEmpty(): Bool;
 ```
 
 ```haxe
-(10...20).filter(_ == 0).isEmpty();
+(10...20).magiter().filter(_ == 0).isEmpty();
 
 //    |
 //    V
@@ -254,7 +227,7 @@ function isEmpty(): Bool;
 function count(callback: (T) -> Bool): Int;
 ```
 ```haxe
-(0...20).count(_ > 10);
+(0...20).magiter().count(_ > 10);
 
 //    |
 //    V
@@ -280,7 +253,7 @@ function find(callback: (T) -> Bool): Null<T>;
 function findIndex(callback: (T) -> Bool): Int;
 ```
 ```haxe
-["ab", "a", "b", "cd"].find(_.length <= 1);
+["ab", "a", "b", "cd"].magiter().find(_.length <= 1);
 
 //    |
 //    V
@@ -297,7 +270,7 @@ function findIndex(callback: (T) -> Bool): Int;
 }
 ```
 ```haxe
-vectorIterator.findIndex(_.magnitude > 3);
+vectorIterator.magiter().findIndex(_.magnitude > 3);
 
 //    |
 //    V
@@ -329,7 +302,7 @@ function indexOf(item: T, startIndex: Int = 0, inlineItemExpr: Bool = false): In
 
 `inlineItemExpr` is a compile-time argument that must either a `true` or `false` literal. It defines how the `item` expression will be used in the generated for-loop. If `true`, the expression will be inserted into the for-loop exactly as passed. If not provided or `false`, the expression will be assigned to a variable, and this variable will be used within the for-loop. Single identifiers and numbers will be automatically inlined since there is no additional runtime cost.
 ```haxe
-[22, 33, 44].indexOf(33);
+[22, 33, 44].magiter().indexOf(33);
 
 //    |
 //    V
@@ -352,7 +325,7 @@ function indexOf(item: T, startIndex: Int = 0, inlineItemExpr: Bool = false): In
 // If the third argument was "true", the "_value" variable would not be generated.
 // Instead, the comparison would be: if(it == World.FindPlayer())
 // FindPlayer might be an expensive operation, so this is not the default behavior.
-EntitiesIterator.indexOf(World.FindPlayer(), 1, false);
+entitiesIterator.magiter().indexOf(World.FindPlayer(), 1, false);
 
 //    |
 //    V
@@ -362,7 +335,7 @@ EntitiesIterator.indexOf(World.FindPlayer(), 1, false);
     var i = 0;
     final _value = World.FindPlayer();
     var _indexOfCount: Int = 1;
-    for(it in EntitiesIterator) {
+    for(it in entitiesIterator) {
         if(_indexOfCount > 0) {
             _indexOfCount--;
         } else if(it == _value) {
@@ -385,7 +358,7 @@ function every(callback: (T) -> Bool): Bool;
 function some(callback: (T) -> Bool): Bool;
 ```
 ```haxe
-[75, 7, 12, 93].every(_ > 0);
+[75, 7, 12, 93].magiter().every(_ > 0);
 
 //    |
 //    V
@@ -403,7 +376,7 @@ function some(callback: (T) -> Bool): Bool;
 ```
 
 ```haxe
-(1...10).some(_ == 4);
+(1...10).magiter().some(_ == 4);
 
 //    |
 //    V
@@ -429,7 +402,7 @@ function some(callback: (T) -> Bool): Bool;
 function reduce(callback: (T, T) -> T): T;
 ```
 ```haxe
-["a", "b", "c", "d"].reduce((a, b) -> a + b);
+["a", "b", "c", "d"].magiter().reduce(_1 + _2);
 
 //    |
 //    V
@@ -459,7 +432,7 @@ function asList(): haxe.ds.List<T>;
 function asVector(): haxe.ds.Vector<T>;
 ```
 ```haxe
-(0...10).filter(_ % 3 != 0).asList();
+(0...10).magiter().filter(_ % 3 != 0).asList();
 
 //    |
 //    V
@@ -475,7 +448,7 @@ function asVector(): haxe.ds.Vector<T>;
 ```
 
 ```haxe
-(0...10).filter(_ % 3 != 0).asVector();
+(0...10).magiter().filter(_ % 3 != 0).asVector();
 
 //    |
 //    V
@@ -499,7 +472,7 @@ Appends the provided array/elements to the current array. The output generates a
 function concat(other: Array<T> | Iterable<T> | Iterator<T>): Array<T>;
 ```
 ```haxe
-(0...10).concat([100, 1000, 9999]);
+(0...10).magiter().concat([100, 1000, 9999]);
 
 //    |
 //    V
@@ -518,7 +491,7 @@ function concat(other: Array<T> | Iterable<T> | Iterator<T>): Array<T>;
 
 ```haxe
 // Pass a "for-loop" as an argument and it will be merged.
-(0...10).filter(_ % 2 == 0).concat( (0...10).filter(_ % 3 == 0) );
+(0...10).magiter().filter(_ % 2 == 0).concat( (0...10).filter(_ % 3 == 0) );
 
 //    |
 //    V
@@ -546,7 +519,7 @@ function concat(other: Array<T> | Iterable<T> | Iterator<T>): Array<T>;
 function fill(value: T, startIndex: Int = 0, endIndex: Int = this.length): Array<T>;
 ```
 ```haxe
-[1, 2, 3].fill(10);
+[1, 2, 3].magiter().fill(10);
 
 //    |
 //    V
@@ -561,7 +534,7 @@ function fill(value: T, startIndex: Int = 0, endIndex: Int = this.length): Array
 }
 ```
 ```haxe
-(0...10).fill(999, 2, 8);
+(0...10).magiter().fill(999, 2, 8);
 
 //    |
 //    V

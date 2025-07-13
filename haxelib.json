@@ -1,8 +1,8 @@
 {
 	"name": "magic-array-tools",
-	"version": "1.3.0",
+	"version": "2.0.0",
 	"description": "Automatically converts chained helper functions on Arrays/Iterables into single, optimal for-loops.",
-	"url": "https://github.com/RobertBorghese/Haxe-MagicArrayTools",
+	"url": "https://github.com/SomeRanDev/Haxe-MagicArrayTools",
 	"license": "MIT",
 	"tags": [
 		"utility",
@@ -18,6 +18,6 @@
 		"js"
 	],
 	"classPath": "src/",
-	"releasenote": "Added \"reduce\", \"fill\", \"every\", and \"some\". Improved \"concat\" and testing ouput.",
-	"contributors": ["RobertBorghese"]
+	"releasenote": "Reworked library to no longer rely on `@:build` macros and be more extendable.",
+	"contributors": ["SomeRanDev"]
 }
