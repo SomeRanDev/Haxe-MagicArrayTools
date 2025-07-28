@@ -92,6 +92,7 @@ Any function that takes a callback as an argument can accept an expression (`Exp
 Curious about the code that will be generated? Simply append `.displayResult()` to the method chain, and the generated for-loop expression will be traced/printed to the console at compile-time! You can even place it between calls to debug up to a certain point in the chain.
 ```haxe
 ["a", "b", "c"]
+    .magiter()
     .map(_.indexOf("b"))
     .filter(_ >= 0)
     .asList()
