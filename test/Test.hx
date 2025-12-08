@@ -1,6 +1,7 @@
 package;
 
 using MagicArrayTools;
+using CustomMagicArrayTools;
 
 var failedAsserts = 0;
 
@@ -302,6 +303,19 @@ function main() {
 
 		final onetwothree = 123;
 		assertEquals(arr.magiter().fill(onetwothree, 2 * 2), [1, 2, 3, 4, 123]);
+	}
+
+	//**********************************************
+	// * custom functions
+	//**********************************************
+	{
+		final arr = [3, 1, 5, 2, 4];
+
+		assertEquals(arr.magiter().ascending(), [1,2,3,4,5]);
+		assertEquals(arr.magiter().descending(), [5,4,3,2,1]);
+		assertEquals(arr.magiter().sort(_1 < _2), [1,2,3,4,5]);
+		assertEquals(arr.magiter().sort(_1 > _2), [5,4,3,2,1]);
+		assertEquals(arr.magiter().sort(_1 > _2).map(Std.string(_) + "lb"), ["5lb","4lb","3lb","2lb","1lb"]);
 	}
 
 	//**********************************************
