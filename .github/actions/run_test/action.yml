@@ -46,18 +46,18 @@ runs:
     # Note: hxcpp currently doesn't work on Haxe 5 (latest)
 
     - name: Setup Hxcpp
-      if: ${{ inputs.haxe-version != 'latest' }}
+      if: ${{ inputs.haxe-version != 'latest' && inputs.haxe-version != '5.0.0-preview.1' }}
       run: haxelib install hxcpp
       shell: bash
 
     - name: Compile Test for C++
-      if: ${{ inputs.haxe-version != 'latest' }}
+      if: ${{ inputs.haxe-version != 'latest' && inputs.haxe-version != '5.0.0-preview.1' }}
       run: haxe Test.hxml -cpp bin
       working-directory: test
       shell: bash
 
     - name: Test C++
-      if: ${{ inputs.haxe-version != 'latest' }}
+      if: ${{ inputs.haxe-version != 'latest' && inputs.haxe-version != '5.0.0-preview.1' }}
       run: ./bin/Test
       working-directory: test
       shell: bash
