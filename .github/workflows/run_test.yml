@@ -12,7 +12,7 @@ jobs:
     name: Run Haxe (4.3.7) test/Test.hxml (on js, cpp, and hl)
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - uses: ./.github/actions/run_test
         with:
@@ -23,7 +23,7 @@ jobs:
     name: Run Haxe (latest) test/Test.hxml (on js, cpp, and hl)
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - uses: ./.github/actions/run_test
         with:

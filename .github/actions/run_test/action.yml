@@ -10,10 +10,10 @@ runs:
   using: "composite"
   steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
 
     - name: Install Haxe
-      uses: krdlab/setup-haxe@v1
+      uses: krdlab/setup-haxe@v2
       with:
         haxe-version: ${{ inputs.haxe-version }}
 
